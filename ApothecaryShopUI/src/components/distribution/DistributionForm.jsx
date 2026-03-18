@@ -24,8 +24,8 @@ const DistributionForm = () => {
       try {
         const response = await getProducts(); // declare & assign first
         //Conditional for Array, before it was causing white screen after pressing "New Distribution"- @Duzzann
-        const productsArray = Array.isArray(response.data?.data)
-          ? response.data.data
+        const productsArray = Array.isArray(response.data)
+          ? response.data || response.data.data
           : [];
         setProducts(productsArray);
       } catch (err) {

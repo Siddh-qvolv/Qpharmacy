@@ -129,7 +129,8 @@ const purchaseOrderSchema = new mongoose.Schema({
 // Generate PO Number
 purchaseOrderSchema.pre('save', async function(next) {
   if (!this.isNew) {
-    return next();
+    // return next();
+    return;
   }
   
   const currentDate = new Date();
@@ -147,7 +148,7 @@ purchaseOrderSchema.pre('save', async function(next) {
   }
   
   this.poNumber = `PO-${year}${month}-${number.toString().padStart(4, '0')}`;
-  next();
+  // next();
 });
 
 module.exports = mongoose.model('PurchaseOrder', purchaseOrderSchema);
