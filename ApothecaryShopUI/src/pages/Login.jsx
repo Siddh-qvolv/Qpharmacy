@@ -11,15 +11,16 @@ import { motion } from 'framer-motion';
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    category: ''
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
-  
-  const { email, password } = formData;
-  
+
+  const { email, password , category } = formData;
+
   // Framer Motion variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -37,7 +38,7 @@ const Login = () => {
     hidden: { opacity: 0, y: 8 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.22 } }
   };
-  
+
   // Handle Google OAuth callback
   useEffect(() => {
     const handleGoogleCallback = async () => {
@@ -52,10 +53,10 @@ const Login = () => {
               isAuthenticated: true,
               user: result.user
             });
-            
+
             // Clear URL parameters
             googleAuthService.clearCallbackParams();
-            
+
             // Redirect to dashboard
             navigate('/dashboard');
           } else {
@@ -81,10 +82,10 @@ const Login = () => {
               isAuthenticated: true,
               user: result.user
             });
-            
+
             // Clear URL parameters
             facebookAuthService.clearCallbackParams();
-            
+
             // Redirect to dashboard
             navigate('/dashboard');
           } else {
@@ -100,31 +101,31 @@ const Login = () => {
     handleGoogleCallback();
     handleFacebookCallback();
   }, [navigate, setAuth]);
-  
+
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-  
+
   const onSubmit = async e => {
     e.preventDefault();
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, formData);
-      
+
       const token = res.data.token;
       // Set Bearer token in localStorage with proper format
       localStorage.setItem('token', `Bearer ${token}`);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      
+
       console.log('Login successful, stored user:', res.data.user);
-      
+
       // Set default Authorization header for all future axios requests
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       setAuth({
         token: `Bearer ${token}`,
         isAuthenticated: true,
         user: res.data.user,
         loading: false
       });
-      
+
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -140,7 +141,7 @@ const Login = () => {
     // Redirect to the backend Facebook OAuth endpoint
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/facebook`;
   };
-  
+
   return (
     <motion.div
       initial="hidden"
@@ -161,7 +162,7 @@ const Login = () => {
             <div className="absolute bottom-20 left-16 w-12 h-12 border-2 border-white rounded-full"></div>
             <div className="absolute bottom-32 right-10 w-8 h-8 border-2 border-white rounded-full"></div>
           </div>
-          
+
           <div className="relative z-10 mx-auto text-center max-w-sm">
             <motion.div variants={itemVariants} className="mb-6">
               <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -173,7 +174,7 @@ const Login = () => {
             <motion.p variants={itemVariants} className="text-lg font-medium text-emerald-100 mb-2">Welcome To</motion.p>
             <motion.h2 variants={itemVariants} className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">Qpharmacy</motion.h2>
             <motion.p variants={itemVariants} className="text-lg text-emerald-100 leading-relaxed">Streamline your pharmaceutical inventory management with our comprehensive platform</motion.p>
-            
+
             {/* Feature highlights */}
             <motion.div variants={itemVariants} className="mt-8 space-y-3">
               <div className="flex items-center justify-center space-x-3">
@@ -248,7 +249,7 @@ const Login = () => {
                 />
               </div>
             </motion.div>
-            
+
             <motion.div variants={itemVariants} className="space-y-2">
               <label htmlFor="password" className="block text-sm font-semibold text-gray-700">Password</label>
               <div className="relative">
@@ -277,6 +278,36 @@ const Login = () => {
               </div>
             </motion.div>
 
+            <motion.div variants={itemVariants} className="space-y-1">
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">Category</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <select
+                  id="category"
+                  name="category"
+                  value={category}
+                  onChange={onChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="public">Public</option>
+                  <option value="echs">ECHS</option>
+                  <option value="staff">Staff</option>
+                </select>
+
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">Select your Category in the organization</p>
+            </motion.div>
+
             <motion.div variants={itemVariants} className="flex items-center justify-between">
               <label className="flex items-center">
                 <input type="checkbox" className="rounded border-gray-300 text-emerald-600 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50" />
@@ -286,7 +317,7 @@ const Login = () => {
                 Forgot password?
               </Link>
             </motion.div>
-            
+
             <motion.div variants={itemVariants}>
               <motion.button
                 whileHover={{ scale: 1.02, y: -2 }}
@@ -299,7 +330,7 @@ const Login = () => {
             </motion.div>
           </motion.form>
 
-{/* 
+          {/* 
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
