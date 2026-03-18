@@ -203,246 +203,413 @@ router.get('/:id', procurementAccess, async (req, res) => {
 });
 
 // Create a new purchase receipt
-router.post('/', procurementAccess, async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+// router.post('/', procurementAccess, async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
   
+//   try {
+//     // Check if purchase order exists
+//     const purchaseOrder = await PurchaseOrder.findById(req.body.purchaseOrder)
+//       .session(session);
+      
+//     if (!purchaseOrder) {
+//       await session.abortTransaction();
+//       session.endSession();
+//       return res.status(404).json({ message: 'Purchase order not found' });
+//     }
+    
+//     // Check if PO status is shipped
+//     if (purchaseOrder.status !== 'shipped' && purchaseOrder.status !== 'partially_received') {
+//       await session.abortTransaction();
+//       session.endSession();
+//       return res.status(400).json({ 
+//         message: 'Purchase order must be in shipped or partially received status'
+//       });
+//     }
+    
+//     // Generate receipt number
+//     const date = new Date();
+//     const dateStr = date.getFullYear().toString() + 
+//                    (date.getMonth() + 1).toString().padStart(2, '0') + 
+//                    date.getDate().toString().padStart(2, '0');
+    
+//     // Find the last receipt number for today to increment
+//     const lastReceipt = await PurchaseReceipt.findOne(
+//       { receiptNumber: new RegExp(`GRN-${dateStr}-\\d+$`) },
+//       {},
+//       { sort: { receiptNumber: -1 } }
+//     ).session(session);
+    
+//     let sequenceNumber = 1;
+//     if (lastReceipt && lastReceipt.receiptNumber) {
+//       // Extract the sequence number from the last receipt number
+//       const parts = lastReceipt.receiptNumber.split('-');
+//       if (parts.length === 3) {
+//         sequenceNumber = parseInt(parts[2]) + 1;
+//       }
+//     }
+    
+//     const receiptNumber = `GRN-${dateStr}-${sequenceNumber.toString().padStart(4, '0')}`;
+    
+//     // Create receipt with the generated receipt number
+//     const receipt = new PurchaseReceipt({
+//       ...req.body,
+//       receiptNumber,
+//       receivedBy: req.user.id
+//     });
+    
+//     // Process each item - update product stock and record stock movements
+//     let allItemsFullyReceived = true;
+    
+//     for (const receiptItem of receipt.items) {
+//       // Find corresponding PO item
+//       const poItem = purchaseOrder.items.find(
+//         item => (item.product && item.product.equals(receiptItem.product)) || 
+//                (item.externalProductId && item.externalProductId === receiptItem.externalProductId)
+//       );
+      
+//       if (!poItem) {
+//         await session.abortTransaction();
+//         session.endSession();
+//         return res.status(400).json({ 
+//           message: `Item ${receiptItem.genericName} not found in purchase order`
+//         });
+//       }
+      
+//       // Update received quantity in PO
+//       const newReceivedQty = (poItem.receivedQuantity || 0) + receiptItem.receivedQuantity;
+//       poItem.receivedQuantity = newReceivedQty;
+      
+//       // Check if all items are fully received
+//       if (newReceivedQty < poItem.quantity) {
+//         allItemsFullyReceived = false;
+//       }
+      
+//       // Check if product exists in our system
+//       if (receiptItem.product) {
+//         // Update existing product stock
+//         const product = await Product.findById(receiptItem.product).session(session);
+        
+//         if (product) {
+//           // Update stock quantity
+//           const previousStock = product.stockQuantity;
+//           product.stockQuantity += receiptItem.receivedQuantity;
+          
+//           // Set category from groupName if provided
+//           if (receiptItem.groupName) {
+//             product.category = receiptItem.groupName;
+//           }
+          
+//           // Update description to include unitSize if provided
+//           if (receiptItem.unitSize) {
+//             product.description = product.description ? 
+//               `${product.description} | Unit Size: ${receiptItem.unitSize}` : 
+//               `Unit Size: ${receiptItem.unitSize}`;
+//           }
+          
+//           await product.save({ session });
+          
+//           // Create stock movement record
+//           const stockMovement = new StockMovement({
+//             product: product._id,
+//             type: 'in',
+//             quantity: receiptItem.receivedQuantity,
+//             previousStock,
+//             newStock: product.stockQuantity,
+//             reason: `Purchase Receipt: ${receipt.receiptNumber}`,
+//             batchNumber: receiptItem.batchNumber,
+//             expiryDate: receiptItem.expiryDate,
+//             createdBy: req.user.id,
+//             purchaseReceipt: receipt._id
+//           });
+          
+//           await stockMovement.save({ session });
+//         }
+//       } else if (receiptItem.externalProductId) {
+//         // Look for a product with matching name
+//         let product = await Product.findOne({
+//           genericName: { $regex: new RegExp(receiptItem.genericName, 'i') }
+//         }).session(session);
+        
+//         // If product doesn't exist, create a new one
+//         if (!product) {
+//           product = new Product({
+//             name: receiptItem.genericName,
+//             genericName: receiptItem.genericName,
+//             // Set category as groupName with fallback
+//             category: receiptItem.groupName || 'General',
+//             manufacturer: purchaseOrder.supplier ? 'From Supplier' : 'External',
+//             batchNumber: receiptItem.batchNumber,
+//             expiryDate: receiptItem.expiryDate,
+//             stockQuantity: receiptItem.receivedQuantity,
+//             unitPrice: receiptItem.unitPrice,
+//             reorderLevel: 10, // Default reorder level
+//             // Include unitSize in description
+//             description: `Imported via Purchase Receipt ${receipt.receiptNumber}${receiptItem.unitSize ? ` | Unit Size: ${receiptItem.unitSize}` : ''}`
+//           });
+          
+//           await product.save({ session });
+          
+//           // Create stock movement record
+//           const stockMovement = new StockMovement({
+//             product: product._id,
+//             type: 'in',
+//             quantity: receiptItem.receivedQuantity,
+//             previousStock: 0,
+//             newStock: receiptItem.receivedQuantity,
+//             reason: `New Product from Purchase Receipt: ${receipt.receiptNumber}`,
+//             batchNumber: receiptItem.batchNumber,
+//             expiryDate: receiptItem.expiryDate,
+//             createdBy: req.user.id,
+//             purchaseReceipt: receipt._id
+//           });
+          
+//           await stockMovement.save({ session });
+//         } else {
+//           // Update existing product found by name
+//           const previousStock = product.stockQuantity;
+//           product.stockQuantity += receiptItem.receivedQuantity;
+          
+//           // Update batch and expiry if newer
+//           if (!product.expiryDate || new Date(receiptItem.expiryDate) > new Date(product.expiryDate)) {
+//             product.batchNumber = receiptItem.batchNumber;
+//             product.expiryDate = receiptItem.expiryDate;
+//           }
+          
+//           // Update category if groupName provided
+//           if (receiptItem.groupName) {
+//             product.category = receiptItem.groupName;
+//           }
+          
+//           // Update description to include unitSize if provided
+//           if (receiptItem.unitSize) {
+//             // Check if description already includes Unit Size
+//             if (product.description && !product.description.includes('Unit Size:')) {
+//               product.description = `${product.description} | Unit Size: ${receiptItem.unitSize}`;
+//             } else if (!product.description) {
+//               product.description = `Unit Size: ${receiptItem.unitSize}`;
+//             } else {
+//               // If Unit Size already exists in description, update it
+//               product.description = product.description.replace(
+//                 /Unit Size:.*?(?=\||$)/,
+//                 `Unit Size: ${receiptItem.unitSize}`
+//               );
+//             }
+//           }
+          
+//           await product.save({ session });
+          
+//           // Create stock movement record
+//           const stockMovement = new StockMovement({
+//             product: product._id,
+//             type: 'in',
+//             quantity: receiptItem.receivedQuantity,
+//             previousStock,
+//             newStock: product.stockQuantity,
+//             reason: `Purchase Receipt: ${receipt.receiptNumber}`,
+//             batchNumber: receiptItem.batchNumber,
+//             expiryDate: receiptItem.expiryDate,
+//             createdBy: req.user.id,
+//             purchaseReceipt: receipt._id
+//           });
+          
+//           await stockMovement.save({ session });
+//         }
+        
+//         // Update receipt item with the associated product
+//         receiptItem.product = product._id;
+//       }
+//     }
+    
+//     // Update PO status
+//     purchaseOrder.status = allItemsFullyReceived ? 'received' : 'partially_received';
+//     if (allItemsFullyReceived) {
+//       purchaseOrder.actualDeliveryDate = receipt.receiptDate;
+//     }
+    
+//     await purchaseOrder.save({ session });
+//     await receipt.save({ session });
+    
+//     await session.commitTransaction();
+//     session.endSession();
+    
+//     await receipt.populate('purchaseOrder', 'poNumber');
+//     await receipt.populate('receivedBy', 'name');
+    
+//     res.status(201).json(receipt);
+//   } catch (error) {
+//     console.log(error)
+//     await session.abortTransaction();
+//     session.endSession();
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
+router.post('/', procurementAccess, async (req, res) => {
   try {
     // Check if purchase order exists
-    const purchaseOrder = await PurchaseOrder.findById(req.body.purchaseOrder)
-      .session(session);
-      
+    const purchaseOrder = await PurchaseOrder.findById(req.body.purchaseOrder);
+
     if (!purchaseOrder) {
-      await session.abortTransaction();
-      session.endSession();
       return res.status(404).json({ message: 'Purchase order not found' });
     }
-    
-    // Check if PO status is shipped
+
     if (purchaseOrder.status !== 'shipped' && purchaseOrder.status !== 'partially_received') {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Purchase order must be in shipped or partially received status'
       });
     }
-    
+
     // Generate receipt number
     const date = new Date();
-    const dateStr = date.getFullYear().toString() + 
-                   (date.getMonth() + 1).toString().padStart(2, '0') + 
-                   date.getDate().toString().padStart(2, '0');
-    
-    // Find the last receipt number for today to increment
+    const dateStr = date.getFullYear().toString() +
+      (date.getMonth() + 1).toString().padStart(2, '0') +
+      date.getDate().toString().padStart(2, '0');
+
     const lastReceipt = await PurchaseReceipt.findOne(
       { receiptNumber: new RegExp(`GRN-${dateStr}-\\d+$`) },
       {},
       { sort: { receiptNumber: -1 } }
-    ).session(session);
-    
+    );
+
     let sequenceNumber = 1;
-    if (lastReceipt && lastReceipt.receiptNumber) {
-      // Extract the sequence number from the last receipt number
+    if (lastReceipt?.receiptNumber) {
       const parts = lastReceipt.receiptNumber.split('-');
       if (parts.length === 3) {
         sequenceNumber = parseInt(parts[2]) + 1;
       }
     }
-    
+
     const receiptNumber = `GRN-${dateStr}-${sequenceNumber.toString().padStart(4, '0')}`;
-    
-    // Create receipt with the generated receipt number
+
     const receipt = new PurchaseReceipt({
       ...req.body,
       receiptNumber,
       receivedBy: req.user.id
     });
-    
-    // Process each item - update product stock and record stock movements
+
     let allItemsFullyReceived = true;
-    
+
     for (const receiptItem of receipt.items) {
-      // Find corresponding PO item
       const poItem = purchaseOrder.items.find(
-        item => (item.product && item.product.equals(receiptItem.product)) || 
-               (item.externalProductId && item.externalProductId === receiptItem.externalProductId)
+        item =>
+          (item.product && item.product.equals(receiptItem.product)) ||
+          (item.externalProductId && item.externalProductId === receiptItem.externalProductId)
       );
-      
+
       if (!poItem) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: `Item ${receiptItem.genericName} not found in purchase order`
         });
       }
-      
-      // Update received quantity in PO
+
       const newReceivedQty = (poItem.receivedQuantity || 0) + receiptItem.receivedQuantity;
       poItem.receivedQuantity = newReceivedQty;
-      
-      // Check if all items are fully received
+
       if (newReceivedQty < poItem.quantity) {
         allItemsFullyReceived = false;
       }
-      
-      // Check if product exists in our system
+
+      // ✅ PRODUCT EXISTS
       if (receiptItem.product) {
-        // Update existing product stock
-        const product = await Product.findById(receiptItem.product).session(session);
-        
+        const product = await Product.findById(receiptItem.product);
+
         if (product) {
-          // Update stock quantity
           const previousStock = product.stockQuantity;
           product.stockQuantity += receiptItem.receivedQuantity;
-          
-          // Set category from groupName if provided
+
           if (receiptItem.groupName) {
             product.category = receiptItem.groupName;
           }
-          
-          // Update description to include unitSize if provided
+
           if (receiptItem.unitSize) {
-            product.description = product.description ? 
-              `${product.description} | Unit Size: ${receiptItem.unitSize}` : 
-              `Unit Size: ${receiptItem.unitSize}`;
+            product.description = product.description
+              ? `${product.description} | Unit Size: ${receiptItem.unitSize}`
+              : `Unit Size: ${receiptItem.unitSize}`;
           }
-          
-          await product.save({ session });
-          
-          // Create stock movement record
-          const stockMovement = new StockMovement({
+
+          await product.save();
+
+          await StockMovement.create({
             product: product._id,
             type: 'in',
             quantity: receiptItem.receivedQuantity,
             previousStock,
             newStock: product.stockQuantity,
-            reason: `Purchase Receipt: ${receipt.receiptNumber}`,
+            reason: `Purchase Receipt: ${receiptNumber}`,
             batchNumber: receiptItem.batchNumber,
             expiryDate: receiptItem.expiryDate,
             createdBy: req.user.id,
             purchaseReceipt: receipt._id
           });
-          
-          await stockMovement.save({ session });
         }
-      } else if (receiptItem.externalProductId) {
-        // Look for a product with matching name
+      }
+
+      // 🔁 EXTERNAL PRODUCT
+      else if (receiptItem.externalProductId) {
         let product = await Product.findOne({
           genericName: { $regex: new RegExp(receiptItem.genericName, 'i') }
-        }).session(session);
-        
-        // If product doesn't exist, create a new one
+        });
+
         if (!product) {
-          product = new Product({
+          product = await Product.create({
             name: receiptItem.genericName,
             genericName: receiptItem.genericName,
-            // Set category as groupName with fallback
             category: receiptItem.groupName || 'General',
-            manufacturer: purchaseOrder.supplier ? 'From Supplier' : 'External',
-            batchNumber: receiptItem.batchNumber,
-            expiryDate: receiptItem.expiryDate,
             stockQuantity: receiptItem.receivedQuantity,
             unitPrice: receiptItem.unitPrice,
-            reorderLevel: 10, // Default reorder level
-            // Include unitSize in description
-            description: `Imported via Purchase Receipt ${receipt.receiptNumber}${receiptItem.unitSize ? ` | Unit Size: ${receiptItem.unitSize}` : ''}`
+            reorderLevel: 10,
+            description: `Imported via Purchase Receipt ${receiptNumber}`
           });
-          
-          await product.save({ session });
-          
-          // Create stock movement record
-          const stockMovement = new StockMovement({
+
+          await StockMovement.create({
             product: product._id,
             type: 'in',
             quantity: receiptItem.receivedQuantity,
             previousStock: 0,
             newStock: receiptItem.receivedQuantity,
-            reason: `New Product from Purchase Receipt: ${receipt.receiptNumber}`,
-            batchNumber: receiptItem.batchNumber,
-            expiryDate: receiptItem.expiryDate,
+            reason: `New Product from Purchase Receipt: ${receiptNumber}`,
             createdBy: req.user.id,
             purchaseReceipt: receipt._id
           });
-          
-          await stockMovement.save({ session });
         } else {
-          // Update existing product found by name
           const previousStock = product.stockQuantity;
           product.stockQuantity += receiptItem.receivedQuantity;
-          
-          // Update batch and expiry if newer
-          if (!product.expiryDate || new Date(receiptItem.expiryDate) > new Date(product.expiryDate)) {
-            product.batchNumber = receiptItem.batchNumber;
-            product.expiryDate = receiptItem.expiryDate;
-          }
-          
-          // Update category if groupName provided
-          if (receiptItem.groupName) {
-            product.category = receiptItem.groupName;
-          }
-          
-          // Update description to include unitSize if provided
-          if (receiptItem.unitSize) {
-            // Check if description already includes Unit Size
-            if (product.description && !product.description.includes('Unit Size:')) {
-              product.description = `${product.description} | Unit Size: ${receiptItem.unitSize}`;
-            } else if (!product.description) {
-              product.description = `Unit Size: ${receiptItem.unitSize}`;
-            } else {
-              // If Unit Size already exists in description, update it
-              product.description = product.description.replace(
-                /Unit Size:.*?(?=\||$)/,
-                `Unit Size: ${receiptItem.unitSize}`
-              );
-            }
-          }
-          
-          await product.save({ session });
-          
-          // Create stock movement record
-          const stockMovement = new StockMovement({
+          await product.save();
+
+          await StockMovement.create({
             product: product._id,
             type: 'in',
             quantity: receiptItem.receivedQuantity,
             previousStock,
             newStock: product.stockQuantity,
-            reason: `Purchase Receipt: ${receipt.receiptNumber}`,
-            batchNumber: receiptItem.batchNumber,
-            expiryDate: receiptItem.expiryDate,
+            reason: `Purchase Receipt: ${receiptNumber}`,
             createdBy: req.user.id,
             purchaseReceipt: receipt._id
           });
-          
-          await stockMovement.save({ session });
         }
-        
-        // Update receipt item with the associated product
+
         receiptItem.product = product._id;
       }
     }
-    
-    // Update PO status
+
     purchaseOrder.status = allItemsFullyReceived ? 'received' : 'partially_received';
-    if (allItemsFullyReceived) {
-      purchaseOrder.actualDeliveryDate = receipt.receiptDate;
-    }
-    
-    await purchaseOrder.save({ session });
-    await receipt.save({ session });
-    
-    await session.commitTransaction();
-    session.endSession();
-    
+
+    await purchaseOrder.save();
+    await receipt.save();
+
     await receipt.populate('purchaseOrder', 'poNumber');
     await receipt.populate('receivedBy', 'name');
-    
+
     res.status(201).json(receipt);
+
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 });
+
+
 
 // For documentation purposes - these are the API endpoints for testing in Postman:
 
