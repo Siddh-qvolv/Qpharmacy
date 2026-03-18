@@ -18,7 +18,11 @@ import {
   Clock,
   Activity,
   UserPlus,
-  AlertCircle
+  AlertCircle,
+  PackageSearch,
+  ShoppingBag,
+  Truck,
+  Info
 } from 'lucide-react';
 
 const UserManagement = () => {
