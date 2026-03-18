@@ -23,7 +23,7 @@ const DashboardAiAnalysis = ({ stats }) => {
         - Low Stock Products: ${stats.lowStockProducts} 
         - Expiring Soon Products: ${stats.expiringProducts}
         - Expired Products: ${stats.expiredProducts}
-        - Total Inventory Value: $${stats.totalValue.toFixed(2)}
+        - Total Inventory Value: ₹${stats.totalValue.toFixed(2)}
         
         Provide a concise analysis of the inventory health and 3-5 specific recommendations to optimize inventory management. 
         Include insights about stock levels, product expiration management, and potential financial considerations.

@@ -315,11 +315,11 @@ const Inventory = () => {
                     </td>
                     <td
                       className="px-3 py-4 text-sm text-gray-500"
-                      title={`Price: $${
+                      title={`Price: ₹${
                         Number(product.unitPrice || 0).toFixed(2)
                       }`}
                     >
-                      ${Number(product.unitPrice || 0).toFixed(2)}
+                      ₹{Number(product.unitPrice || 0).toFixed(2)}
                     </td>
                     <td
                       className="px-3 py-4"

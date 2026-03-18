@@ -187,7 +187,7 @@ const Dashboard = () => {
               Total Value
             </h3>
             <p className="text-3xl font-bold text-gray-800">
-              ${addAbbreviation(stats.totalValue)}
+              ₹{addAbbreviation(stats.totalValue)}
             </p>
           </div>
         </div>
