@@ -84,7 +84,8 @@ const purchaseReceiptSchema = new mongoose.Schema({
 // Generate Receipt Number
 purchaseReceiptSchema.pre('save', async function(next) {
   if (!this.isNew) {
-    return next();
+    // return next();
+    return;
   }
   
   const currentDate = new Date();
@@ -102,7 +103,7 @@ purchaseReceiptSchema.pre('save', async function(next) {
   }
   
   this.receiptNumber = `GRN-${year}${month}-${number.toString().padStart(4, '0')}`;
-  next();
+  // next();
 });
 
 module.exports = mongoose.model('PurchaseReceipt', purchaseReceiptSchema);
