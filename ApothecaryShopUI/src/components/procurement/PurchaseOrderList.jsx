@@ -8,6 +8,20 @@ import {
 import { getCurrentUser } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import AppLoader from "../AppLoader.jsx";
+import { motion } from "framer-motion";
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Eye, 
+  Edit2, 
+  CheckCircle, 
+  Package, 
+  PackageCheck,
+  XCircle,
+  Truck,
+  ArrowRight
+} from "lucide-react";
 
 function PurchaseOrderList() {
   const [orders, setOrders] = useState([]);
@@ -101,303 +115,246 @@ function PurchaseOrderList() {
       : orders.filter((order) => order.status === filter)
     : [];
 
-  const getStatusBadgeClass = (status) => {
+  const getStatusBadgeConfig = (status) => {
     switch (status) {
       case "draft":
-        return "bg-gray-100 text-gray-800";
+        return { color: "bg-slate-100 text-slate-700 border-slate-200", icon: null };
       case "submitted":
-        return "bg-blue-100 text-blue-800";
+        return { color: "bg-blue-50 text-blue-700 border-blue-200", icon: <ArrowRight className="w-3 h-3 mr-1" /> };
       case "approved":
-        return "bg-purple-100 text-purple-800";
+        return { color: "bg-purple-50 text-purple-700 border-purple-200", icon: <CheckCircle className="w-3 h-3 mr-1" /> };
       case "shipped":
-        return "bg-indigo-100 text-indigo-800";
+        return { color: "bg-indigo-50 text-indigo-700 border-indigo-200", icon: <Truck className="w-3 h-3 mr-1" /> };
       case "received":
-        return "bg-green-100 text-green-800";
+        return { color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: <PackageCheck className="w-3 h-3 mr-1" /> };
       case "partially_received":
-        return "bg-yellow-100 text-yellow-800";
+        return { color: "bg-amber-50 text-amber-700 border-amber-200", icon: <Package className="w-3 h-3 mr-1" /> };
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return { color: "bg-rose-50 text-rose-700 border-rose-200", icon: <XCircle className="w-3 h-3 mr-1" /> };
       default:
-        return "bg-gray-100 text-gray-800";
+        return { color: "bg-slate-100 text-slate-700 border-slate-200", icon: null };
     }
   };
 
-  if (loading) return <AppLoader message="Loading purchase orders" />;
-  if (error) return <div className="text-red-500 p-4">{error}</div>;
+  const statusFilters = [
+    { id: "all", label: "All Orders" },
+    { id: "draft", label: "Draft" },
+    { id: "submitted", label: "Submitted" },
+    { id: "approved", label: "Approved" },
+    { id: "shipped", label: "Shipped" },
+    { id: "received", label: "Received" }
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  if (loading) return <div className="py-12 flex justify-center"><div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Custom Toast Notification */}
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="w-full"
+    >
+      {/* Toast Notification */}
       {toast.show && (
-        <div
-          className={`fixed top-4 right-4 z-50 p-4 rounded shadow-lg transition-all transform translate-x-0 
-            ${
-              toast.type === "error"
-                ? "bg-red-500 text-white"
-                : "bg-green-500 text-white"
-            }`}
-          style={{ animation: "slideIn 0.3s ease-out" }}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg border flex items-center gap-3
+            ${toast.type === "error" ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-emerald-50 border-emerald-200 text-emerald-800"}`}
         >
-          <div className="flex items-center">
-            {toast.type === "error" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
-            <p>{toast.message}</p>
-            <button
-              onClick={() => setToast({ ...toast, show: false })}
-              className="ml-4 text-white hover:text-gray-200 focus:outline-none"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 011.414 1.414L11.414 10l4.293 4.293a1 1 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 01-1.414-1.414L8.586 10 4.293 5.707a1 1 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+          {toast.type === "error" ? <XCircle className="w-5 h-5 text-rose-500" /> : <CheckCircle className="w-5 h-5 text-emerald-500" />}
+          <span className="font-medium text-sm">{toast.message}</span>
+          <button onClick={() => setToast({ ...toast, show: false })} className="ml-2 text-current opacity-60 hover:opacity-100">
+            &times;
+          </button>
+        </motion.div>
       )}
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Purchase Orders</h1>
+      {error ? (
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-4 rounded-xl flex items-center mb-6">
+          <XCircle className="w-5 h-5 mr-3" />
+          <span className="font-medium">{error}</span>
+        </div>
+      ) : null}
+
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h2 className="text-xl font-bold text-slate-800">Order Directory</h2>
         <Link
           to="/procurement/purchase-orders/new"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200"
         >
+          <Plus className="w-4 h-4 mr-2" />
           Create New Order
         </Link>
       </div>
 
-      <div className="mb-4">
+      {/* Modern Filter Pills */}
+      <div className="mb-6 flex overflow-x-auto hide-scrollbar pb-2">
         <div className="flex space-x-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded ${
-              filter === "all"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter("draft")}
-            className={`px-4 py-2 rounded ${
-              filter === "draft"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            Draft
-          </button>
-          <button
-            onClick={() => setFilter("submitted")}
-            className={`px-4 py-2 rounded ${
-              filter === "submitted"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            Submitted
-          </button>
-          <button
-            onClick={() => setFilter("approved")}
-            className={`px-4 py-2 rounded ${
-              filter === "approved"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            Approved
-          </button>
-          <button
-            onClick={() => setFilter("shipped")}
-            className={`px-4 py-2 rounded ${
-              filter === "shipped"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            Shipped
-          </button>
-          <button
-            onClick={() => setFilter("received")}
-            className={`px-4 py-2 rounded ${
-              filter === "received"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            Received
-          </button>
+          {statusFilters.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`px-4 py-2 text-sm font-semibold whitespace-nowrap rounded-full transition-all duration-200 ${
+                filter === f.id
+                  ? "bg-slate-800 text-white shadow-sm"
+                  : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              {f.label}
+              {filter === "all" && f.id !== "all" ? (
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${filter === f.id ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-500"}`}>
+                  {orders.filter(o => o.status === f.id).length}
+                </span>
+              ) : null}
+            </button>
+          ))}
         </div>
       </div>
 
-      {filteredOrders.length === 0 ? (
-        <p className="text-gray-500">No purchase orders found</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white divide-y divide-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  PO Number
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Supplier
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
-                <tr key={order._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Link
-                      to={`/procurement/purchase-orders/${order._id}`}
-                      className="text-blue-600 hover:text-blue-900 font-medium"
-                    >
-                      {order.poNumber}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {order.supplier?.name || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {format(new Date(order.orderDate), "MMM dd, yyyy")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    ₹{order.totalAmount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(
-                        order.status
-                      )}`}
-                    >
-                      {order.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      <Link
-                        to={`/procurement/purchase-orders/${order._id}`}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        View
-                      </Link>
-
-                      {order.status === "draft" && (
-                        <>
-                          <Link
-                            to={`/procurement/purchase-orders/${order._id}/edit`}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() =>
-                              handleStatusChange(order._id, "submitted")
-                            }
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            Submit
-                          </button>
-                        </>
-                      )}
-
-                      {order.status === "submitted" && userRole === "admin" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(order._id, "approved")
-                          }
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          Approve
-                        </button>
-                      )}
-
-                      {order.status === "approved" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(order._id, "shipped")
-                          }
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Mark as Shipped
-                        </button>
-                      )}
-
-                      {order.status === "shipped" && (
-                        <Link
-                          to={`/procurement/receive/${order._id}`}
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          Receive Items
-                        </Link>
-                      )}
-
-                      {(order.status === "draft" ||
-                        order.status === "submitted") && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(order._id, "cancelled")
-                          }
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </div>
-                  </td>
+      {/* Table Container */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+      >
+        {filteredOrders.length === 0 ? (
+          <div className="p-16 text-center text-slate-500 flex flex-col justify-center items-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+              <PackageCheck size={32} />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-800 mb-1">No orders found</h3>
+            <p className="text-slate-500">There are no purchase orders matching your current filter.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50/50">
+                <tr className="border-b border-slate-100">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Reference</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Supplier</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {filteredOrders.map((order) => {
+                  const badgeConf = getStatusBadgeConfig(order.status);
+                  return (
+                    <motion.tr variants={itemVariants} key={order._id} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                          {order.poNumber}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                          {order.supplier?.name || "Unknown Supplier"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 hidden sm:table-cell font-medium">
+                        {format(new Date(order.orderDate), "MMM dd, yyyy")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-slate-700">₹{order.totalAmount.toFixed(2)}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${badgeConf.color} uppercase tracking-wider`}>
+                          {badgeConf.icon}
+                          {order.status.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <div className="flex justify-end gap-2 items-center">
+                          <Link
+                            to={`/procurement/purchase-orders/${order._id}`}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye size={18} />
+                          </Link>
+
+                          {order.status === "draft" && (
+                            <>
+                              <Link
+                                to={`/procurement/purchase-orders/${order._id}/edit`}
+                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Edit Order"
+                              >
+                                <Edit2 size={18} />
+                              </Link>
+                              <button
+                                onClick={() => handleStatusChange(order._id, "submitted")}
+                                className="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-md text-xs font-semibold transition-colors"
+                              >
+                                Submit
+                              </button>
+                            </>
+                          )}
+
+                          {order.status === "submitted" && userRole === "admin" && (
+                            <button
+                              onClick={() => handleStatusChange(order._id, "approved")}
+                              className="px-2 py-1 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-md text-xs font-semibold transition-colors flex items-center"
+                            >
+                              <CheckCircle size={12} className="mr-1" /> Approve
+                            </button>
+                          )}
+
+                          {order.status === "approved" && (
+                            <button
+                              onClick={() => handleStatusChange(order._id, "shipped")}
+                              className="px-2 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs font-semibold transition-colors flex items-center"
+                            >
+                              <Truck size={12} className="mr-1" /> Ship
+                            </button>
+                          )}
+
+                          {order.status === "shipped" && (
+                            <Link
+                              to={`/procurement/receive/${order._id}`}
+                              className="px-2 py-1 bg-emerald-600 text-white hover:bg-emerald-700 rounded-md text-xs font-semibold transition-colors flex items-center shadow-sm"
+                            >
+                              <PackageCheck size={12} className="mr-1" /> Receive
+                            </Link>
+                          )}
+
+                          {(order.status === "draft" || order.status === "submitted") && (
+                            <button
+                              onClick={() => handleStatusChange(order._id, "cancelled")}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Cancel Order"
+                            >
+                              <XCircle size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
   );
 }
 

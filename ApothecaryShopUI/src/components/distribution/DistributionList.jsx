@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getDistributions, deleteDistribution, exportDistributionsCSV, exportDistributionsPDF } from '../../services/distributionService';
+import { motion } from 'framer-motion';
+import { 
+  Truck, 
+  FileDown, 
+  FileText, 
+  Plus, 
+  Search, 
+  Calendar, 
+  Filter, 
+  Eye, 
+  Trash2,
+  PackageCheck
+} from 'lucide-react';
 
 const DistributionList = () => {
   const [distributions, setDistributions] = useState([]);
@@ -49,7 +62,7 @@ const DistributionList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this distribution order?')) {
+    if (window.confirm('Are you sure you want to delete this distribution order? This action cannot be undone.')) {
       try {
         await deleteDistribution(id);
         setDistributions(prevDistributions => 
@@ -78,200 +91,296 @@ const DistributionList = () => {
   };
 
   const getStatusBadge = (status) => {
-    const badgeColors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'processed': 'bg-blue-100 text-blue-800',
-      'shipped': 'bg-indigo-100 text-indigo-800',
-      'delivered': 'bg-green-100 text-green-800',
-      'returned': 'bg-red-100 text-red-800',
-      'cancelled': 'bg-gray-100 text-gray-800'
+    const badgeMap = {
+      'pending': { colors: 'bg-amber-50 text-amber-700 border-amber-200', label: 'Pending' },
+      'processed': { colors: 'bg-blue-50 text-blue-700 border-blue-200', label: 'Processed' },
+      'shipped': { colors: 'bg-indigo-50 text-indigo-700 border-indigo-200', label: 'Shipped' },
+      'delivered': { colors: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Delivered' },
+      'returned': { colors: 'bg-rose-50 text-rose-700 border-rose-200', label: 'Returned' },
+      'cancelled': { colors: 'bg-slate-50 text-slate-700 border-slate-200', label: 'Cancelled' }
     };
     
+    const config = badgeMap[status] || { colors: 'bg-slate-50 text-slate-700 border-slate-200', label: status };
+    
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${badgeColors[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status}
+      <span className={`px-2.5 py-1 inline-flex text-xs font-bold rounded-md border ${config.colors} uppercase tracking-wider`}>
+        {config.label}
       </span>
     );
   };
 
-  return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-        <h4 className="text-xl font-semibold text-gray-700">Distribution Orders</h4>
-        <div className="flex space-x-2">
-          <button
-            onClick={handleExportCSV}
-            className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-          >
-            Export CSV
-          </button>
-          <button
-            onClick={handleExportPDF}
-            className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-          >
-            Export PDF
-          </button>
-          <Link to="/distributions/new">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              New Distribution
-            </button>
-          </Link>
-        </div>
-      </div>
-      <div className="p-6">
-        <form onSubmit={applyFilters} className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Status
-              </label>
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="processed">Processed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="returned">Returned</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Recipient
-              </label>
-              <input
-                type="text"
-                name="recipient"
-                value={filters.recipient}
-                onChange={handleFilterChange}
-                placeholder="Search by recipient"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Start Date
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                value={filters.startDate}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                End Date
-              </label>
-              <input
-                type="date"
-                name="endDate"
-                value={filters.endDate}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="flex justify-end mt-4 space-x-3">
-            <button 
-              type="button" 
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              Clear Filters
-            </button>
-            <button 
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Apply Filters
-            </button>
-          </div>
-        </form>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
 
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12 pt-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
+        >
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg shadow-sm">
+                <Truck size={24} />
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Distribution Orders</h1>
+            </div>
+            <p className="text-slate-500 pl-11">Manage outbound logistics and deliveries</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-emerald-600 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <FileDown className="w-4 h-4 mr-2" />
+              Export CSV
+            </button>
+            <button
+              onClick={handleExportPDF}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-rose-600 transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Export PDF
+            </button>
+            <Link to="/distributions/new">
+              <button className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                <Plus className="w-4 h-4 mr-2" />
+                New Distribution
+              </button>
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Filters and Search Workspace */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-8"
+        >
+          <form onSubmit={applyFilters} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  Status
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Filter size={16} />
+                  </div>
+                  <select
+                    name="status"
+                    value={filters.status}
+                    onChange={handleFilterChange}
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:bg-slate-100 cursor-pointer appearance-none transition-colors"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em' }}
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="processed">Processed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="returned">Returned</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  Recipient
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Search size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    name="recipient"
+                    value={filters.recipient}
+                    onChange={handleFilterChange}
+                    placeholder="Search by name..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  Start Date
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Calendar size={16} />
+                  </div>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  End Date
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Calendar size={16} />
+                  </div>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-slate-700"
+                  />
+                </div>
+              </div>
+              
+            </div>
+            
+            <div className="flex justify-end pt-2 border-t border-slate-100 mt-4 gap-3">
+              <button 
+                type="button" 
+                onClick={clearFilters}
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              >
+                Clear Filters
+              </button>
+              <button 
+                type="submit"
+                className="px-6 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-600"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </form>
+        </motion.div>
+
+        {/* Table Content */}
         {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="p-16 text-center text-slate-400 flex flex-col justify-center items-center">
+            <div className="w-12 h-12 border-2 border-slate-200 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+            Loading distribution orders...
           </div>
         ) : distributions.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No distribution orders found
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-16 text-center flex flex-col items-center justify-center min-h-[300px]"
+          >
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+              <PackageCheck size={40} />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-800 mb-1">No distribution orders found</h3>
+            <p className="text-slate-500 max-w-sm">
+              We couldn't find any distribution records matching your current criteria.
+            </p>
+          </motion.div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order #
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Recipient
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Items
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {distributions.map((dist) => (
-                  <tr key={dist._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {dist.orderNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(dist.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {dist.recipient}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {dist.recipientType}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(dist.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {dist.items.length} items
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <Link to={`/distributions/${dist._id}`}>
-                        <button className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2">
-                          View
-                        </button>
-                      </Link>
-                      {dist.status === 'pending' && (
-                        <button 
-                          onClick={() => handleDelete(dist._id)}
-                          className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </td>
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+          >
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-100">
+                <thead className="bg-slate-50/50">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Order #</th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Recipient Info</th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Items</th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-50">
+                  {distributions.map((dist) => (
+                    <motion.tr variants={itemVariants} key={dist._id} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded">
+                          {dist.orderNumber}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium hidden sm:table-cell">
+                        {new Date(dist.createdAt).toLocaleDateString(undefined, {
+                          month: 'short', day: 'numeric', year: 'numeric'
+                        })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                            {dist.recipient}
+                          </span>
+                          <span className="text-xs text-slate-400 capitalize flex items-center mt-0.5">
+                            {dist.recipientType}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div className="flex items-center text-sm font-medium text-slate-600">
+                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md mr-1.5">{dist.items.length}</span> items
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(dist.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            to={`/distributions/${dist._id}`}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye size={18} />
+                          </Link>
+                          {dist.status === 'pending' && (
+                            <button 
+                              onClick={() => handleDelete(dist._id)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Delete Order"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {distributions.length > 0 && (
+              <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+                <span className="text-sm text-slate-500 font-medium">
+                  Showing <span className="text-slate-700 font-bold">{distributions.length}</span> distribution records
+                </span>
+              </div>
+            )}
+          </motion.div>
         )}
       </div>
     </div>

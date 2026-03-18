@@ -3,6 +3,19 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 // import MaomaoVision from "../components/MaomaoVision";
 import AppLoader from "../components/AppLoader";
+import { motion } from "framer-motion";
+import { 
+  Search, 
+  X, 
+  Plus, 
+  PackageSearch,
+  AlertTriangle,
+  Clock,
+  XCircle,
+  Filter,
+  Edit2,
+  Package
+} from "lucide-react";
 
 const Inventory = () => {
   const [products, setProducts] = useState([]);
@@ -87,291 +100,248 @@ const Inventory = () => {
     }, 5000);
   };
 
-  if (loading) return <AppLoader message="Loading" />;
+  if (loading) return <AppLoader message="Loading your inventory" />;
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Inventory Management
-      </h1>
-
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div className="w-full sm:w-auto relative">
-          <input
-            type="text"
-            placeholder="Search by name or SKU..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
-            >
-              <svg
-                className="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap gap-2 items-center">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="block px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Products</option>
-            <option value="low-stock">Low Stock</option>
-            <option value="in-stock">In Stock</option>
-            <option value="expiring-soon">Expiring Soon</option>
-            <option value="expired">Expired</option>
-          </select>
-
-          {/* <MaomaoVision onProductFound={handleProductFound} /> */}
-
-          <Link
-            to="/products/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Add Product
-          </Link>
-        </div>
-      </div>
-
-      {/* Snackbar notification */}
-      {snackbar.open && (
-        <div
-          className={`mb-4 p-3 rounded-md ${
-            snackbar.severity === "info"
-              ? "bg-blue-50 text-blue-700"
-              : snackbar.severity === "success"
-              ? "bg-green-50 text-green-700"
-              : snackbar.severity === "error"
-              ? "bg-red-50 text-red-700"
-              : "bg-yellow-50 text-yellow-700"
-          }`}
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
         >
-          {snackbar.message}
-          <button
-            onClick={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-            className="float-right text-gray-400 hover:text-gray-500"
-          >
-            <svg
-              className="h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+                <PackageSearch size={24} />
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Inventory Directory</h1>
+            </div>
+            <p className="text-slate-500 pl-11">Manage and track your medical supplies</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+             {/* <MaomaoVision onProductFound={handleProductFound} /> */}
+            <Link
+              to="/products/new"
+              className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-      )}
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product
+            </Link>
+          </div>
+        </motion.div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-6 text-center w-full">
-          <p className="text-gray-500">No products found</p>
-        </div>
-      ) : (
-        <div className="bg-white shadow-md rounded-lg w-full">
-          <table className="w-full table-fixed divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="w-[10%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  SKU
-                </th>
-                <th
-                  scope="col"
-                  className="w-[20%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Name
-                </th>
-                <th
-                  scope="col"
-                  className="w-[15%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Category
-                </th>
-                <th
-                  scope="col"
-                  className="w-[10%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Stock
-                </th>
-                <th
-                  scope="col"
-                  className="w-[10%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Price
-                </th>
-                <th
-                  scope="col"
-                  className="w-[15%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Expiry
-                </th>
-                <th
-                  scope="col"
-                  className="w-[8%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProducts.map((product) => {
-                const today = new Date();
-                const expiryDate = product.expiryDate
-                  ? new Date(product.expiryDate)
-                  : new Date();
-                const isExpired = expiryDate < today;
-                const isExpiringSoon =
-                  !isExpired &&
-                  expiryDate <= new Date(today.setDate(today.getDate() + 90));
+        {/* Filters and Search */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between"
+        >
+          <div className="relative w-full sm:w-96">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <Search size={18} />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name or SKU..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
 
-                return (
-                  <tr key={product._id} className="hover:bg-gray-50">
-                    <td
-                      className="px-3 py-4 text-sm font-medium text-gray-900 truncate"
-                      title={product.sku}
-                    >
-                      {product.sku}
-                    </td>
-                    <td
-                      className="px-3 py-4 text-sm text-gray-900 truncate"
-                      title={product.name}
-                    >
-                      <Link
-                        to={`/products/${product._id}`}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        {product.name}
-                      </Link>
-                    </td>
-                    <td
-                      className="px-3 py-4 text-sm text-gray-500 truncate"
-                      title={product.category}
-                    >
-                      {product.category}
-                    </td>
-                    <td
-                      className="px-3 py-4 text-sm text-gray-500"
-                      title={`Quantity: ${product.stockQuantity}`}
-                    >
-                      <span
-                        className={
-                          product.stockQuantity <= product.reorderLevel
-                            ? "text-red-600 font-bold"
-                            : ""
-                        }
-                      >
-                        {product.stockQuantity}
-                      </span>
-                      {product.stockQuantity <= product.reorderLevel && (
-                        <span className="ml-1 px-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                          Low
-                        </span>
-                      )}
-                    </td>
-                    <td
-                      className="px-3 py-4 text-sm text-gray-500"
-                      title={`Price: ₹${
-                        Number(product.unitPrice || 0).toFixed(2)
-                      }`}
-                    >
-                      ₹{Number(product.unitPrice || 0).toFixed(2)}
-                    </td>
-                    <td
-                      className="px-3 py-4"
-                      title={
-                        product.stockQuantity <= product.reorderLevel
-                          ? "Low Stock"
-                          : "In Stock"
-                      }
-                    >
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.stockQuantity <= product.reorderLevel
-                            ? "bg-red-100 text-red-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {product.stockQuantity <= product.reorderLevel
-                          ? "Low Stock"
-                          : "In Stock"}
-                      </span>
-                    </td>
-                    <td
-                      className="px-3 py-4 text-sm text-gray-500"
-                      title={`Expiry Date: ${expiryDate.toLocaleDateString()}`}
-                    >
-                      <span
-                        className={`${
-                          isExpired
-                            ? "text-red-600"
-                            : isExpiringSoon
-                            ? "text-yellow-600"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {expiryDate.toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td className="px-3 py-4 text-sm font-medium">
-                      <Link
-                        to={`/products/${product._id}/edit`}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        Edit
-                      </Link>
-                    </td>
+          <div className="w-full sm:w-auto flex items-center relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <Filter size={16} />
+            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="block w-full sm:w-auto pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:bg-slate-50 cursor-pointer appearance-none shadow-sm transition-colors"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+            >
+              <option value="all">All Products</option>
+              <option value="low-stock">Low Stock</option>
+              <option value="in-stock">In Stock</option>
+              <option value="expiring-soon">Expiring Soon</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+        </motion.div>
+
+        {/* Snackbar notification */}
+        {snackbar.open && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mb-6 p-4 rounded-xl shadow-sm border flex justify-between items-center ${
+              snackbar.severity === "info"
+                ? "bg-blue-50 border-blue-100 text-blue-700"
+                : snackbar.severity === "success"
+                ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+                : snackbar.severity === "error"
+                ? "bg-rose-50 border-rose-100 text-rose-700"
+                : "bg-amber-50 border-amber-100 text-amber-700"
+            }`}
+          >
+            <span className="font-medium text-sm">{snackbar.message}</span>
+            <button
+              onClick={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+              className="text-current opacity-70 hover:opacity-100 p-1"
+            >
+              <X size={16} />
+            </button>
+          </motion.div>
+        )}
+
+        {/* Table Content */}
+        {filteredProducts.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center flex flex-col items-center justify-center min-h-[400px]"
+          >
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+              <Package size={40} />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-800 mb-1">No products found</h3>
+            <p className="text-slate-500 max-w-sm">
+              {searchTerm 
+                ? `We couldn't find any products matching "${searchTerm}" with the current filters.` 
+                : "Your inventory list is currently empty. Start tracking your items by adding a new product."}
+            </p>
+            {!searchTerm && (
+              <Link
+                to="/products/new"
+                className="mt-6 inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+              >
+                <Plus size={16} className="mr-2" />
+                Add Your First Product
+              </Link>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">SKU</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Name</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap hidden md:table-cell">Category</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Stock</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Price</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell">Status</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Expiry</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Actions</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredProducts.map((product) => {
+                    const today = new Date();
+                    const expiryDate = product.expiryDate ? new Date(product.expiryDate) : new Date();
+                    const isExpired = expiryDate < today;
+                    const isExpiringSoon = !isExpired && expiryDate <= new Date(today.setDate(today.getDate() + 90));
+
+                    return (
+                      <motion.tr variants={itemVariants} key={product._id} className="hover:bg-slate-50/80 transition-colors group">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded" title={product.sku}>
+                            {product.sku}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Link to={`/products/${product._id}`} className="flex items-center group-hover:text-emerald-600 transition-colors">
+                            <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold mr-3 shrink-0">
+                              {product.name ? product.name.charAt(0).toUpperCase() : "N"}
+                            </div>
+                            <span className="text-sm font-semibold text-slate-800 truncate max-w-[150px] sm:max-w-xs" title={product.name}>
+                              {product.name}
+                            </span>
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                          <span className="text-sm text-slate-500">{product.category}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <span className={`text-sm font-bold ${product.stockQuantity <= product.reorderLevel ? "text-rose-600" : "text-slate-700"}`}>
+                              {product.stockQuantity}
+                            </span>
+                            {product.stockQuantity <= product.reorderLevel && (
+                              <AlertTriangle size={14} className="ml-1.5 text-rose-500 inline-block" />
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-600">
+                          ₹{Number(product.unitPrice || 0).toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                          <span className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-md border ${
+                            product.stockQuantity <= product.reorderLevel
+                              ? "bg-rose-50 text-rose-700 border-rose-100"
+                              : "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          }`}>
+                            {product.stockQuantity <= product.reorderLevel ? "Low Stock" : "In Stock"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            {isExpired ? <XCircle size={14} className="text-rose-500" /> : isExpiringSoon ? <Clock size={14} className="text-amber-500" /> : null}
+                            <span className={`text-sm font-medium ${isExpired ? "text-rose-600" : isExpiringSoon ? "text-amber-600" : "text-slate-500"}`}>
+                              {expiryDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Link
+                            to={`/products/${product._id}/edit`}
+                            className="inline-flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                            title="Edit Product"
+                          >
+                            <Edit2 size={16} />
+                          </Link>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };
