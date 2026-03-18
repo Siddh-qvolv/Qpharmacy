@@ -1,11 +1,13 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { PERMISSIONS, canAccess } from '../utils/roles';
+import { LayoutDashboard, PackageSearch, ShoppingBag, Truck, Users, LogOut, ChevronDown, Menu as MenuIcon, X } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, setAuth, user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
@@ -26,263 +28,232 @@ const Navbar = () => {
 
   const handleLogout = () => {
     try {
-      // Clear authentication data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
-      // Update auth context
       setAuth({
         token: null,
         isAuthenticated: false,
         user: null
       });
-      
-      // Redirect to login page
       navigate('/');
     } catch (error) {
       console.error("Logout failed:", error);
-      // Still try to navigate away even if there was an error
       navigate('/');
     }
   };
 
+  const isActive = (path) => {
+    return location.pathname.startsWith(path);
+  };
+
+  const NavLink = ({ to, icon: Icon, children }) => (
+    <Link 
+      to={to} 
+      className={`flex items-center px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
+        isActive(to) 
+          ? 'bg-emerald-50 text-emerald-700' 
+          : 'text-slate-600 hover:bg-slate-50 hover:text-emerald-600'
+      }`}
+    >
+      <Icon className={`w-4 h-4 mr-2 ${isActive(to) ? 'text-emerald-600' : 'text-slate-400'}`} />
+      {children}
+    </Link>
+  );
+
   return (
-    <nav className="bg-gradient-to-r from-green-800 to-green-700 text-white p-4 shadow-lg w-full relative z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="text-xl font-bold tracking-wide">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-green-200">🌿</span>
-            <span className="hover:text-green-200 transition-all duration-300">Qpharmacy</span>
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] w-full">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 h-16">
+        
+        {/* Logo */}
+        <div className="flex-shrink-0 flex items-center gap-2">
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
+              <span className="text-xl leading-none block">🌿</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight text-slate-800">
+              Qpharmacy
+            </span>
           </Link>
         </div>
         
-        {/* Hamburger menu button (mobile only) */}
-        <div className="md:hidden">
+        {/* Mobile menu button */}
+        <div className="md:hidden flex items-center">
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 focus:outline-none"
+            className="p-2 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-emerald-600 transition-colors focus:outline-none"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {isMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
           </button>
         </div>
         
         {/* Desktop menu */}
-        <div className="hidden md:flex items-center space-x-6">
-          {isAuthenticated && (
-            <>
-              <Link to="/dashboard" className="px-3 py-1 hover:text-green-200 hover:underline transition-all duration-300">
-                Dashboard
-              </Link>
-              
-              {/* Inventory - Admin, Inventory Manager, Staff */}
-              {canAccess(user?.role, 'CAN_VIEW_INVENTORY') && (
-                <Link to="/inventory" className="px-3 py-1 hover:text-green-200 hover:underline transition-all duration-300">
-                  Inventory
-                </Link>
-              )}
-              
-              {/* Procurement - Admin, Inventory Manager, Procurement Staff, Staff */}
-              {canAccess(user?.role, 'CAN_VIEW_PROCUREMENT') && (
-                <Link to="/procurement/purchase-orders" className="px-3 py-1 hover:text-green-200 hover:underline transition-all duration-300">
-                  Procurement
-                </Link>
-              )}
-              
-              {/* Distribution - Admin, Inventory Manager, Distribution Staff, Staff */}
-              {canAccess(user?.role, 'CAN_VIEW_DISTRIBUTION') && (
-                <Link to="/distributions" className="px-3 py-1 hover:text-green-200 hover:underline transition-all duration-300">
-                  Distribution
-                </Link>
-              )}
-              
-              {/* Profile Dropdown */}
-              <div className="relative" ref={profileRef}>
+        <div className="hidden md:flex flex-1 items-center justify-between ml-8">
+          <div className="flex space-x-1">
+            {isAuthenticated && (
+              <>
+                <NavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</NavLink>
+                
+                {canAccess(user?.role, 'CAN_VIEW_INVENTORY') && (
+                  <NavLink to="/inventory" icon={PackageSearch}>Inventory</NavLink>
+                )}
+                
+                {canAccess(user?.role, 'CAN_VIEW_PROCUREMENT') && (
+                  <NavLink to="/procurement/purchase-orders" icon={ShoppingBag}>Procurement</NavLink>
+                )}
+                
+                {canAccess(user?.role, 'CAN_VIEW_DISTRIBUTION') && (
+                  <NavLink to="/distributions" icon={Truck}>Distribution</NavLink>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center">
+            {isAuthenticated ? (
+              <div className="relative ml-4" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 focus:outline-none"
+                  className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all focus:outline-none"
                 >
-                  <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center border-2 border-white">
-                    <span className="text-white font-semibold text-sm">
-                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  <div className="flex flex-col items-end mr-1 hidden lg:flex">
+                    <span className="text-sm font-semibold text-slate-700 leading-tight">
+                      {user?.name || "User"}
+                    </span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                      {user?.role || "USER"}
                     </span>
                   </div>
-                  <svg 
-                    className={`w-4 h-4 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`}
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <div className="h-9 w-9 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-200 shadow-sm text-emerald-700 font-bold text-sm">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-50 border border-gray-200">
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                      <div className="mt-2">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl py-2 z-50 border border-slate-100 transform opacity-100 scale-100 transition-all origin-top-right">
+                    <div className="px-5 py-3 border-b border-slate-50 mb-1">
+                      <p className="text-sm font-semibold text-slate-800">{user?.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                      <div className="mt-2.5">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                           user?.role === 'admin' 
-                            ? 'bg-purple-100 text-purple-800' 
-                            : 'bg-green-100 text-green-800'
+                            ? 'bg-purple-50 text-purple-700 border border-purple-100' 
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
                         }`}>
-                          {user?.role?.toUpperCase() || 'USER'}
+                          {user?.role || 'USER'}
                         </span>
                       </div>
                     </div>
                     
-                    {user?.role === 'admin' && (
-                      <Link
-                        to="/user-management"
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    <div className="px-2">
+                      {user?.role === 'admin' && (
+                        <Link
+                          to="/user-management"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center px-3 py-2.5 text-sm text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                        >
+                          <Users className="w-4 h-4 mr-3 text-slate-400 group-hover:text-emerald-500" />
+                          User Management
+                        </Link>
+                      )}
+                      
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          handleLogout();
+                        }}
+                        className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors mt-1"
                       >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        User Management
-                      </Link>
-                    )}
-                    
-                    <button
-                      onClick={() => {
-                        setIsProfileOpen(false);
-                        handleLogout();
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Logout
-                    </button>
+                        <LogOut className="w-4 h-4 mr-3 text-rose-400" />
+                        Log out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
-            </>
-          )}
-          {!isAuthenticated && (
-            <Link to="/" className="px-4 py-1 bg-green-700 hover:bg-green-600 rounded-md shadow-md hover:shadow-lg transition-all duration-300">
-              Login
-            </Link>
-          )}
+            ) : (
+              <div className="flex gap-3">
+                <Link to="/" className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                  Log in
+                </Link>
+                <Link to="/register" className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-xl shadow-sm hover:bg-emerald-700 hover:shadow transition-all">
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Mobile menu dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden mt-2 px-2 pt-2 pb-4 bg-green-800 rounded-md shadow-lg">
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-slate-100 shadow-lg px-4 pt-2 pb-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {isAuthenticated ? (
-            <div className="flex flex-col space-y-2">
-              {/* User Info */}
-              <div className="px-3 py-3 bg-green-700 rounded-md mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center border-2 border-white">
-                    <span className="text-white font-semibold">
-                      {user?.name?.charAt(0).toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-white">{user?.name}</p>
-                    <p className="text-xs text-green-200">{user?.email}</p>
-                    <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                      user?.role === 'admin' 
-                        ? 'bg-purple-200 text-purple-800' 
-                        : 'bg-white text-green-800'
-                    }`}>
-                      {user?.role?.toUpperCase() || 'USER'}
-                    </span>
-                  </div>
+            <div className="flex flex-col space-y-1">
+              {/* User Info Mobile */}
+              <div className="px-4 py-4 mb-3 border-b border-slate-100 flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-200">
+                  <span className="text-emerald-700 font-bold text-lg">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-slate-800">{user?.name}</p>
+                  <p className="text-sm text-slate-500">{user?.email}</p>
                 </div>
               </div>
 
-              <Link 
-                to="/dashboard" 
-                className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
+              <NavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</NavLink>
               
-              {/* Inventory - Admin, Inventory Manager, Staff */}
               {canAccess(user?.role, 'CAN_VIEW_INVENTORY') && (
-                <Link 
-                  to="/inventory" 
-                  className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Inventory
-                </Link>
+                <NavLink to="/inventory" icon={PackageSearch}>Inventory</NavLink>
               )}
               
-              {/* Procurement - Admin, Inventory Manager, Procurement Staff, Staff */}
               {canAccess(user?.role, 'CAN_VIEW_PROCUREMENT') && (
-                <Link 
-                  to="/procurement/purchase-orders" 
-                  className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Procurement
-                </Link>
+                <NavLink to="/procurement/purchase-orders" icon={ShoppingBag}>Procurement</NavLink>
               )}
               
-              {/* Distribution - Admin, Inventory Manager, Distribution Staff, Staff */}
               {canAccess(user?.role, 'CAN_VIEW_DISTRIBUTION') && (
-                <Link 
-                  to="/distributions" 
-                  className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Distribution
-                </Link>
+                <NavLink to="/distributions" icon={Truck}>Distribution</NavLink>
               )}
               
               {user?.role === 'admin' && (
-                <Link 
-                  to="/user-management" 
-                  className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200 border-t border-green-700 mt-2 pt-3"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    User Management
-                  </div>
-                </Link>
+                <>
+                  <div className="h-px bg-slate-100 my-2 mx-2"></div>
+                  <NavLink to="/user-management" icon={Users}>User Management</NavLink>
+                </>
               )}
               
+              <div className="h-px bg-slate-100 my-2 mx-2"></div>
               <button 
                 onClick={() => {
                   setIsMenuOpen(false);
                   handleLogout();
                 }}
-                className="text-left px-3 py-2 rounded hover:bg-red-600 hover:text-white border-t border-green-700 mt-2"
+                className="flex items-center px-4 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left"
               >
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  Logout
-                </div>
+                <LogOut className="w-5 h-5 mr-3" />
+                Logout
               </button>
             </div>
           ) : (
-            <Link 
-              to="/" 
-              className="block px-3 py-2 rounded hover:bg-green-700 hover:text-green-200"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Login
-            </Link>
+            <div className="flex flex-col gap-2 p-2">
+              <Link 
+                to="/" 
+                className="block text-center px-4 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Log in
+              </Link>
+              <Link 
+                to="/register" 
+                className="block text-center px-4 py-3 rounded-xl bg-emerald-600 text-white font-medium hover:bg-emerald-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Register
+              </Link>
+            </div>
           )}
         </div>
       )}
