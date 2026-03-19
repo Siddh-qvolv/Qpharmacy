@@ -39,6 +39,13 @@ const Dashboard = () => {
   });
   const navigate = useNavigate();
   const [recentPurchaseOrders, setRecentPurchaseOrders] = useState([]);
+  const cardStyles = {
+  totalProducts: "from-blue-500 to-indigo-600",
+  lowStock: "from-amber-500 to-orange-600",
+  expiring: "from-orange-500 to-red-500",
+  expired: "from-rose-500 to-pink-600",
+  totalValue: "from-emerald-500 to-teal-600",
+};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -213,94 +220,142 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
+     
+
         {/* Stats Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
-        >
-          {/* Total Products */}
-          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=all")} className="cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <PackageSearch size={64} />
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                <PackageSearch size={20} />
-              </div>
-            </div>
-            <h3 className="text-slate-500 text-sm font-medium mb-1">Total Products</h3>
-            <p className="text-3xl font-bold text-slate-800">{stats.totalProducts}</p>
-          </motion.div>
+<motion.div
+  variants={containerVariants}
+  initial="hidden"
+  animate="show"
+  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
+>
 
-          {/* Low Stock */}
-          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=low-stock")} className=" cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <AlertTriangle size={64} />
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
-                <AlertTriangle size={20} />
-              </div>
-              {stats.lowStockProducts > 0 && (
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-                </span>
-              )}
-            </div>
-            <h3 className="text-slate-500 text-sm font-medium mb-1">Low Stock</h3>
-            <p className="text-3xl font-bold text-slate-800">{stats.lowStockProducts}</p>
-          </motion.div>
+  {/* Total Products */}
+  <motion.div
+    variants={itemVariants}
+    onClick={() => navigate("/inventory?filter=all")}
+    className="cursor-pointer bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+  >
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <PackageSearch size={64} />
+    </div>
 
-          {/* Expiring Soon */}
-          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=expiring-soon")} className="cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Clock size={64} />
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
-                <Clock size={20} />
-              </div>
-            </div>
-            <h3 className="text-slate-500 text-sm font-medium mb-1">Expiring Soon</h3>
-            <p className="text-3xl font-bold text-slate-800">{stats.expiringProducts}</p>
-          </motion.div>
+    <div className="flex items-center justify-between mb-4">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <PackageSearch size={20} />
+      </div>
+    </div>
 
-          {/* Expired */}
-          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=expired")} className="cursor-pointer  bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <XCircle size={64} />
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                <XCircle size={20} />
-              </div>
-              {stats.expiredProducts > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">
-                  Action Needed
-                </span>
-              )}
-            </div>
-            <h3 className="text-slate-500 text-sm font-medium mb-1">Expired</h3>
-            <p className="text-3xl font-bold text-slate-800">{stats.expiredProducts}</p>
-          </motion.div>
+    <h3 className="text-white/80 text-sm font-medium mb-1">
+      Total Products
+    </h3>
+    <p className="text-3xl font-bold">{stats.totalProducts}</p>
+  </motion.div>
 
-          {/* Total Value */}
-          <motion.div variants={itemVariants} className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md transition-all sm:col-span-2 lg:col-span-1">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <TrendingUp size={64} />
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white backdrop-blur-sm">
-                <IndianRupee size={20} />
-              </div>
-            </div>
-            <h3 className="text-emerald-50 text-sm font-medium mb-1">Total Value</h3>
-            <p className="text-3xl font-bold">₹{addAbbreviation(stats.totalValue)}</p>
-          </motion.div>
-        </motion.div>
+  {/* Low Stock */}
+  <motion.div
+    variants={itemVariants}
+    onClick={() => navigate("/inventory?filter=low-stock")}
+    className="cursor-pointer bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+  >
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <AlertTriangle size={64} />
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <AlertTriangle size={20} />
+      </div>
+
+      {stats.lowStockProducts > 0 && (
+        <span className="flex h-3 w-3 relative">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+        </span>
+      )}
+    </div>
+
+    <h3 className="text-white/80 text-sm font-medium mb-1">
+      Low Stock
+    </h3>
+    <p className="text-3xl font-bold">{stats.lowStockProducts}</p>
+  </motion.div>
+
+  {/* Expiring Soon */}
+  <motion.div
+    variants={itemVariants}
+    onClick={() => navigate("/inventory?filter=expiring-soon")}
+    className="cursor-pointer bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+  >
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <Clock size={64} />
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <Clock size={20} />
+      </div>
+    </div>
+
+    <h3 className="text-white/80 text-sm font-medium mb-1">
+      Expiring Soon
+    </h3>
+    <p className="text-3xl font-bold">{stats.expiringProducts}</p>
+  </motion.div>
+
+  {/* Expired */}
+  <motion.div
+    variants={itemVariants}
+    onClick={() => navigate("/inventory?filter=expired")}
+    className="cursor-pointer bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+  >
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <XCircle size={64} />
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <XCircle size={20} />
+      </div>
+
+      {stats.expiredProducts > 0 && (
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/20 text-white backdrop-blur-sm">
+          Action Needed
+        </span>
+      )}
+    </div>
+
+    <h3 className="text-white/80 text-sm font-medium mb-1">
+      Expired
+    </h3>
+    <p className="text-3xl font-bold">{stats.expiredProducts}</p>
+  </motion.div>
+
+  {/* Total Value (Already Perfect) */}
+  <motion.div
+    variants={itemVariants}
+    className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all sm:col-span-2 lg:col-span-1"
+  >
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <TrendingUp size={64} />
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        <IndianRupee size={20} />
+      </div>
+    </div>
+
+    <h3 className="text-white/80 text-sm font-medium mb-1">
+      Total Value
+    </h3>
+    <p className="text-3xl font-bold">
+      ₹{addAbbreviation(stats.totalValue)}
+    </p>
+  </motion.div>
+
+</motion.div>
+
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
