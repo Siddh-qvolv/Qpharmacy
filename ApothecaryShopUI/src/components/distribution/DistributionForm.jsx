@@ -123,7 +123,7 @@ const DistributionForm = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-600 to-slate-900 px-6 py-6 sm:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

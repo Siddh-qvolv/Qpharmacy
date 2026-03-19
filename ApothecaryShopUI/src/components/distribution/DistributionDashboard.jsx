@@ -97,205 +97,210 @@ const DistributionDashboard = () => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h4 className="text-xl font-semibold text-gray-700">Distribution Analytics</h4>
-        <div className="flex space-x-2">
-          <button
-            onClick={handleExportCSV}
-            className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-          >
-            Export CSV
-          </button>
-          <button
-            onClick={handleExportPDF}
-            className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-          >
-            Export PDF
-          </button>
-          <Link to="/distributions">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-              View All Orders
-            </button>
-          </Link>
-        </div>
-      </div>
-      
-      <div className="p-6">
-        <form onSubmit={applyFilters} className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Start Date
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                value={filters.startDate}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                End Date
-              </label>
-              <input
-                type="date"
-                name="endDate"
-                value={filters.endDate}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex items-end">
-              <div className="flex space-x-2">
-                <button 
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  Apply
+    <div className="min-h-screen w-full bg-[#f8fafc] py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100">
+          <div className="px-6 py-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h4 className="text-xl font-bold text-slate-800">Distribution Analytics</h4>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={handleExportCSV}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-emerald-600 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                Export CSV
+              </button>
+              <button
+                onClick={handleExportPDF}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-rose-600 transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
+              >
+                Export PDF
+              </button>
+              <Link to="/distributions">
+                <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                  View All Orders
                 </button>
-                <button 
-                  type="button" 
-                  onClick={clearFilters}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                  Clear
-                </button>
+              </Link>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <form onSubmit={applyFilters} className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-slate-700 text-sm font-semibold mb-2">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 text-sm font-semibold mb-2">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <div className="flex gap-3 w-full">
+                    <button 
+                      type="submit"
+                      className="flex-1 px-6 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-600"
+                    >
+                      Apply Filters
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={clearFilters}
+                      className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </form>
+            </form>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        ) : (
-          <>
-            <div className="mb-6">
-              <h5 className="text-lg font-semibold text-gray-700 mb-3">
-                Distribution Status Summary <span className="font-normal text-sm text-gray-500">({getDateRangeText()})</span>
-              </h5>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="space-y-2">
-                    {reportData.statusCounts.map((status) => {
-                      const percentage = Math.round((status.count / getTotalStatusCount()) * 100);
-                      return (
-                        <div key={status._id} className="relative">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm font-medium capitalize">{status._id}</span>
-                            <span className="text-sm text-gray-500">{status.count} ({percentage}%)</span>
+            {loading ? (
+              <div className="flex flex-col justify-center items-center py-20 text-slate-400">
+                <div className="w-12 h-12 border-4 border-slate-100 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+                <span>Loading analytics data...</span>
+              </div>
+            ) : error ? (
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-rose-500"></div>
+                {error}
+              </div>
+            ) : (
+              <>
+                <div className="mb-10">
+                  <h5 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    Status Summary
+                    <span className="font-medium text-sm text-slate-400">({getDateRangeText()})</span>
+                  </h5>
+                  
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                      <div className="space-y-5">
+                        {reportData.statusCounts.map((status) => {
+                          const percentage = Math.round((status.count / getTotalStatusCount()) * 100);
+                          return (
+                            <div key={status._id} className="relative">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-bold text-slate-700 capitalize">{status._id}</span>
+                                <span className="text-sm font-medium text-slate-500">{status.count} ({percentage}%)</span>
+                              </div>
+                              <div className="overflow-hidden h-3 flex rounded-full bg-slate-200 shadow-inner">
+                                <div 
+                                  style={{ width: `${percentage}%` }} 
+                                  className={`rounded-full shadow-lg ${getStatusColor(status._id)} transition-all duration-500`}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        
+                        {reportData.statusCounts.length === 0 && (
+                          <div className="text-center py-10 text-slate-400 italic">
+                            No distribution data available for selected range
                           </div>
-                          <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-                            <div 
-                              style={{ width: `${percentage}%` }} 
-                              className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center ${getStatusColor(status._id)}`}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    
-                    {reportData.statusCounts.length === 0 && (
-                      <div className="text-center py-4 text-gray-500">
-                        No distribution data available
+                        )}
                       </div>
-                    )}
+                    </div>
+                    
+                    <div className="grid grid-cols-2 xs:grid-cols-3 gap-4">
+                      {['pending', 'processed', 'shipped', 'delivered', 'returned', 'cancelled'].map(status => {
+                        const statusData = reportData.statusCounts.find(s => s._id === status) || { count: 0 };
+                        return (
+                          <div key={status} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                            <h6 className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">{status}</h6>
+                            <p className="text-2xl font-black text-slate-800">{statusData.count}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
                 
-                <div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['pending', 'processed', 'shipped', 'delivered', 'returned', 'cancelled'].map(status => {
-                      const statusData = reportData.statusCounts.find(s => s._id === status) || { count: 0 };
-                      return (
-                        <div key={status} className="bg-gray-50 p-4 rounded-lg">
-                          <h6 className="text-sm text-gray-500 capitalize">{status}</h6>
-                          <p className="text-2xl font-bold">{statusData.count}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <h5 className="text-lg font-bold text-slate-800 mb-4">Top Recipients</h5>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                      {reportData.topRecipients.length > 0 ? (
+                        <table className="min-w-full divide-y divide-slate-100">
+                          <thead className="bg-slate-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Recipient</th>
+                              <th className="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Order Count</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {reportData.topRecipients.map((recipient, index) => (
+                              <tr key={index} className="hover:bg-slate-50 transition-colors">
+                                <td className="px-6 py-4 text-sm font-semibold text-slate-700">{recipient._id}</td>
+                                <td className="px-6 py-4 text-right">
+                                  <span className="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold">
+                                    {recipient.count}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div className="text-center py-12 text-slate-400 italic">
+                          No recipient data available
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-lg font-bold text-slate-800 mb-4">Most Distributed Products</h5>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                      {reportData.topProducts.length > 0 ? (
+                        <table className="min-w-full divide-y divide-slate-100">
+                          <thead className="bg-slate-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Product</th>
+                              <th className="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Total Qty</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {reportData.topProducts.map((product, index) => (
+                              <tr key={index} className="hover:bg-slate-50 transition-colors">
+                                <td className="px-6 py-4">
+                                  <div className="font-semibold text-slate-700">{product.product?.name || 'Unknown Product'}</div>
+                                  <div className="text-[10px] text-slate-400 font-medium">{product.product?.code || 'No Code'}</div>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                  <span className="text-sm font-bold text-slate-800">{product.totalQuantity}</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div className="text-center py-12 text-slate-400 italic">
+                          No product distribution data available
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h5 className="text-lg font-semibold text-gray-700 mb-3">Top Recipients</h5>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  {reportData.topRecipients.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead>
-                          <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recipient</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {reportData.topRecipients.map((recipient, index) => (
-                            <tr key={index}>
-                              <td className="px-4 py-3">{recipient._id}</td>
-                              <td className="px-4 py-3">{recipient.count}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-500">
-                      No recipient data available
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <div>
-                <h5 className="text-lg font-semibold text-gray-700 mb-3">Most Distributed Products</h5>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  {reportData.topProducts.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead>
-                          <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {reportData.topProducts.map((product, index) => (
-                            <tr key={index}>
-                              <td className="px-4 py-3">
-                                <div>
-                                  <div className="font-medium">{product.product?.name || 'Unknown Product'}</div>
-                                  <div className="text-sm text-gray-500">{product.product?.code || 'No Code'}</div>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">{product.totalQuantity}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-500">
-                      No product distribution data available
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
