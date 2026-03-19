@@ -7,6 +7,7 @@ import { googleAuthService } from '../services/googleAuthService';
 import { facebookAuthService } from '../services/facebookAuthService';
 /* eslint-disable-next-line no-unused-vars */
 import { motion } from 'framer-motion';
+import logo from '../assets/logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -147,13 +148,17 @@ const Login = () => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-emerald-50 py-6 px-4 sm:px-6 lg:px-8"
+      className="fixed inset-0 z-50 overflow-y-auto w-full h-full flex items-center justify-center bg-cover bg-center bg-no-repeat py-6 px-4 sm:px-6 lg:px-8"
+      style={{ backgroundImage: "url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2000&auto=format&fit=crop')" }}
     >
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0">
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+      
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10 shadow-2xl rounded-3xl overflow-hidden shadow-black/50">
         {/* Left Welcome Panel */}
         <motion.div
           variants={panelLeftVariants}
-          className="hidden lg:flex flex-col justify-center relative overflow-hidden rounded-l-3xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 text-white px-12 py-20 shadow-2xl"
+          className="hidden lg:flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-[#1b2b20]/90 via-[#101b13]/90 to-[#08100a]/90 backdrop-blur-md text-white px-12 py-20 border-r border-white/10"
         >
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
@@ -165,50 +170,34 @@ const Login = () => {
 
           <div className="relative z-10 mx-auto text-center max-w-sm">
             <motion.div variants={itemVariants} className="mb-6">
-              <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
+              <div className="w-36 h-36 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-2xl p-3 border-4 border-yellow-500/30 overflow-hidden">
+                <img src={logo} alt="Army Dental Corps Logo" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
             </motion.div>
             <motion.p variants={itemVariants} className="text-lg font-medium text-emerald-100 mb-2">Welcome To</motion.p>
-            <motion.h2 variants={itemVariants} className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">Army Dental Corps</motion.h2>
-            <motion.p variants={itemVariants} className="text-lg text-emerald-100 leading-relaxed">Streamline your pharmaceutical inventory management with our comprehensive platform</motion.p>
+            <motion.h2 variants={itemVariants} className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 bg-clip-text text-transparent">Army Dental Corps</motion.h2>
+            <motion.p variants={itemVariants} className="text-lg text-emerald-100/80 leading-relaxed">Empowering the Army Dental Corps with precision military dental inventory and supply chain management.</motion.p>
 
-            {/* Feature highlights */}
-            <motion.div variants={itemVariants} className="mt-8 space-y-3">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-2 h-2 bg-emerald-200 rounded-full"></div>
-                <span className="text-sm text-emerald-100">Real-time inventory tracking</span>
-              </div>
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-2 h-2 bg-emerald-200 rounded-full"></div>
-                <span className="text-sm text-emerald-100">Automated stock alerts</span>
-              </div>
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-2 h-2 bg-emerald-200 rounded-full"></div>
-                <span className="text-sm text-emerald-100">Secure data management</span>
-              </div>
-            </motion.div>
+
           </div>
         </motion.div>
 
         {/* Right Form Card */}
         <motion.div
           variants={cardVariants}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-l-none lg:rounded-r-3xl shadow-2xl border border-white/20 p-6 md:p-8"
+          className="bg-white/95 backdrop-blur-xl shadow-2xl p-6 md:p-8 relative rounded-2xl lg:rounded-l-none lg:rounded-r-3xl"
         >
           <div className="mb-6">
             <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mr-3">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#1b3b24] to-[#0a1f10] rounded-xl flex items-center justify-center mr-3 shadow-lg border border-white/20">
+                <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Welcome Back</h1>
             </div>
             <p className="text-gray-600 text-base">
-              New to our platform? <Link to="/register" className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors duration-200">Create your account</Link>
+              New to our platform? <Link to="/register" className="text-yellow-700 font-semibold hover:text-yellow-800 transition-colors duration-200">Create your account</Link>
             </p>
           </div>
 
@@ -237,14 +226,14 @@ const Login = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                   </svg>
                 </div>
-                <input
+                  <input
                   id="email"
                   type="email"
                   name="email"
                   value={email}
                   onChange={onChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1b3b24] focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm"
                   placeholder="Enter your email"
                 />
               </div>
@@ -265,7 +254,7 @@ const Login = () => {
                   value={password}
                   onChange={onChange}
                   required
-                  className="w-full pl-12 pr-12 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1b3b24] focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm"
                   placeholder="Enter your password"
                 />
                 <button
@@ -292,7 +281,7 @@ const Login = () => {
                   value={category}
                   onChange={onChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm appearance-none cursor-pointer"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1b3b24] focus:border-transparent hover:bg-gray-50 transition-all duration-200 shadow-sm appearance-none cursor-pointer"
                 >
                   <option value="public">Public</option>
                   <option value="echs">ECHS</option>
@@ -310,12 +299,12 @@ const Login = () => {
 
             <motion.div variants={itemVariants} className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-emerald-600 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-50" />
+                <input type="checkbox" className="rounded border-gray-300 text-[#1b3b24] shadow-sm focus:border-[#1b3b24] focus:ring focus:ring-[#1b3b24] focus:ring-opacity-50" />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200">
+              {/* <Link to="/forgot-password" className="text-sm text-[#1b3b24] hover:text-[#0a1f10] font-medium transition-colors duration-200">
                 Forgot password?
-              </Link>
+              </Link> */}
             </motion.div>
 
             <motion.div variants={itemVariants}>
@@ -323,7 +312,7 @@ const Login = () => {
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#1b3b24] to-[#102b18] text-white font-semibold hover:from-[#102b18] hover:to-[#0a1f10] transition-all duration-200 shadow-lg hover:shadow-xl border border-yellow-500/20"
               >
                 Sign In to Dashboard
               </motion.button>
