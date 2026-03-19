@@ -51,6 +51,7 @@ const DistributionDetail = () => {
 
   const requestStatusUpdate = (newStatus) => {
     setStatusToApply(newStatus);
+    setPendingStatus(newStatus);
     setShowConfirmDialog(true);
   };
 

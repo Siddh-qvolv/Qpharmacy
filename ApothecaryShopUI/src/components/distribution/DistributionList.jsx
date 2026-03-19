@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getDistributions, deleteDistribution, exportDistributionsCSV, exportDistributionsPDF } from '../../services/distributionService';
 import { motion } from 'framer-motion';
+import ConfirmationModal from '../ConfirmationModal';
 import { 
   Truck, 
   FileDown, 
@@ -10,8 +11,6 @@ import {
   Search, 
   Calendar, 
   Filter, 
-  Eye, 
-  Trash2,
   PackageCheck
 } from 'lucide-react';
 
@@ -24,6 +23,9 @@ const DistributionList = () => {
     startDate: '',
     endDate: ''
   });
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchDistributions();
@@ -61,17 +63,33 @@ const DistributionList = () => {
     setTimeout(fetchDistributions, 0);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this distribution order? This action cannot be undone.')) {
-      try {
-        await deleteDistribution(id);
-        setDistributions(prevDistributions => 
-          prevDistributions.filter(dist => dist._id !== id)
-        );
-      } catch (error) {
-        console.error('Error deleting distribution:', error);
-      }
+  const requestDelete = (id) => {
+    setPendingDeleteId(id);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+
+    setShowConfirmDelete(false);
+    setDeleting(true);
+
+    try {
+      await deleteDistribution(pendingDeleteId);
+      setDistributions(prevDistributions => 
+        prevDistributions.filter(dist => dist._id !== pendingDeleteId)
+      );
+    } catch (error) {
+      console.error('Error deleting distribution:', error);
+    } finally {
+      setDeleting(false);
+      setPendingDeleteId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDelete(false);
+    setPendingDeleteId(null);
   };
 
   const handleExportCSV = async () => {
@@ -124,6 +142,16 @@ const DistributionList = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12 pt-8">
+      <ConfirmationModal
+        isOpen={showConfirmDelete}
+        title="Confirm delete"
+        message="Are you sure you want to delete this distribution order? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isLoading={deleting}
+      />
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
@@ -349,7 +377,7 @@ const DistributionList = () => {
                         </Link>
                         {dist.status === 'pending' && (
                           <button 
-                            onClick={() => handleDelete(dist._id)}
+                            onClick={() => requestDelete(dist._id)}
                             className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition"
                           >
                             Delete

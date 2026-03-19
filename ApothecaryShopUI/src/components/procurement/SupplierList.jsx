@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getSuppliers, deleteSupplier } from "../../services/supplierService";
 import AppLoader from "../AppLoader";
+import ConfirmationModal from "../ConfirmationModal";
 import { motion } from "framer-motion";
 import { PackageSearch, User, Phone, CheckCircle, Plus } from 'lucide-react';
 
@@ -9,6 +10,9 @@ function SupplierList() {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,16 +47,32 @@ function SupplierList() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this supplier?")) {
-      try {
-        await deleteSupplier(id);
-        setSuppliers(suppliers.filter((supplier) => supplier._id !== id));
-      } catch (err) {
-        setError("Failed to delete supplier");
-        console.error(err);
-      }
+  const requestDelete = (id) => {
+    setPendingDeleteId(id);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+
+    setShowConfirmDelete(false);
+    setDeleting(true);
+
+    try {
+      await deleteSupplier(pendingDeleteId);
+      setSuppliers((prev) => prev.filter((supplier) => supplier._id !== pendingDeleteId));
+    } catch (err) {
+      setError("Failed to delete supplier");
+      console.error(err);
+    } finally {
+      setDeleting(false);
+      setPendingDeleteId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDelete(false);
+    setPendingDeleteId(null);
   };
 
   if (loading) return <AppLoader message="Loading suppliers" />;
@@ -60,6 +80,16 @@ function SupplierList() {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+      <ConfirmationModal
+        isOpen={showConfirmDelete}
+        title="Confirm delete"
+        message="Are you sure you want to delete this supplier?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isLoading={deleting}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -158,7 +188,7 @@ function SupplierList() {
                         Edit
                       </Link>
                       <button
-                        onClick={() => handleDelete(supplier._id)}
+                        onClick={() => requestDelete(supplier._id)}
                         className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition"
                       >
                         Delete

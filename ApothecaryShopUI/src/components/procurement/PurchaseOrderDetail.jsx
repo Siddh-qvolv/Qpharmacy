@@ -5,6 +5,7 @@ import {
   updatePurchaseOrderStatus,
 } from "../../services/purchaseOrderService";
 import AppLoader from "../AppLoader";
+import ConfirmationModal from "../ConfirmationModal";
 // Removing the date-fns import and using built-in date formatting
 
 function PurchaseOrderDetail() {
@@ -14,6 +15,9 @@ function PurchaseOrderDetail() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState("");
 
   // Helper function to format dates without date-fns
   const formatDate = (dateString) => {
@@ -43,23 +47,32 @@ function PurchaseOrderDetail() {
     }
   };
 
-  const handleStatusChange = async (newStatus) => {
-    if (
-      window.confirm(
-        `Are you sure you want to mark this order as ${newStatus.replace(
-          "_",
-          " "
-        )}?`
-      )
-    ) {
-      try {
-        await updatePurchaseOrderStatus(id, newStatus);
-        fetchOrderData(); // Refresh data
-      } catch (err) {
-        setError("Failed to update order status");
-        console.error(err);
-      }
+  const requestStatusChange = (newStatus) => {
+    setPendingStatus(newStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const applyStatusChange = async () => {
+    if (!pendingStatus) return;
+
+    setShowConfirmDialog(false);
+    setUpdatingStatus(true);
+
+    try {
+      await updatePurchaseOrderStatus(id, pendingStatus);
+      fetchOrderData(); // Refresh data
+    } catch (err) {
+      setError("Failed to update order status");
+      console.error(err);
+    } finally {
+      setUpdatingStatus(false);
+      setPendingStatus("");
     }
+  };
+
+  const cancelStatusChange = () => {
+    setShowConfirmDialog(false);
+    setPendingStatus("");
   };
 
   const getStatusBadgeClass = (status) => {
@@ -95,6 +108,17 @@ function PurchaseOrderDetail() {
 
   return (
     <div className="container mx-auto p-4">
+      <ConfirmationModal
+        isOpen={showConfirmDialog}
+        title="Confirm Status Change"
+        message={`Are you sure you want to mark this order as ${pendingStatus.replace("_", " ")}?`}
+        confirmLabel="Yes, update"
+        cancelLabel="No, keep"
+        onConfirm={applyStatusChange}
+        onCancel={cancelStatusChange}
+        isLoading={updatingStatus}
+      />
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Purchase Order: {order.poNumber}</h1>
 
@@ -108,7 +132,7 @@ function PurchaseOrderDetail() {
                 Edit
               </Link>
               <button
-                onClick={() => handleStatusChange("submitted")}
+                onClick={() => requestStatusChange("submitted")}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
               >
                 Submit for Approval
@@ -118,7 +142,7 @@ function PurchaseOrderDetail() {
 
           {order.status === "submitted" && (
             <button
-              onClick={() => handleStatusChange("approved")}
+              onClick={() => requestStatusChange("approved")}
               className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700"
             >
               Approve
@@ -127,7 +151,7 @@ function PurchaseOrderDetail() {
 
           {order.status === "approved" && (
             <button
-              onClick={() => handleStatusChange("shipped")}
+              onClick={() => requestStatusChange("shipped")}
               className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-700"
             >
               Mark as Shipped
@@ -145,7 +169,7 @@ function PurchaseOrderDetail() {
 
           {(order.status === "draft" || order.status === "submitted") && (
             <button
-              onClick={() => handleStatusChange("cancelled")}
+              onClick={() => requestStatusChange("cancelled")}
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
             >
               Cancel Order

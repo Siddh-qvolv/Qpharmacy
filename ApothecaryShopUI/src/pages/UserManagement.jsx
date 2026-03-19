@@ -4,6 +4,7 @@ import { getAllUsers, createUser, updateUser, deleteUser, getUserStats } from '.
 import { useNavigate } from 'react-router-dom';
 import { ROLES, ROLE_LABELS, getRoleOptions } from '../utils/roles';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmationModal from '../components/ConfirmationModal';
 import { 
   Users, 
   ShieldCheck, 
@@ -45,6 +46,9 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [pendingDeleteUserId, setPendingDeleteUserId] = useState(null);
+  const [deletingUser, setDeletingUser] = useState(false);
   
   // Pagination and filters
   const [page, setPage] = useState(1);
@@ -160,19 +164,35 @@ const UserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      try {
-        await deleteUser(userId);
-        setSuccessMessage('User deleted successfully!');
-        fetchUsers();
-        fetchStats();
-        setTimeout(() => setSuccessMessage(null), 3000);
-      } catch (err) {
-        setError(err.message || 'Failed to delete user');
-        setTimeout(() => setError(null), 5000);
-      }
+  const requestDeleteUser = (userId) => {
+    setPendingDeleteUserId(userId);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!pendingDeleteUserId) return;
+
+    setShowConfirmDelete(false);
+    setDeletingUser(true);
+
+    try {
+      await deleteUser(pendingDeleteUserId);
+      setSuccessMessage('User deleted successfully!');
+      fetchUsers();
+      fetchStats();
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to delete user');
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      setDeletingUser(false);
+      setPendingDeleteUserId(null);
     }
+  };
+
+  const cancelDeleteUser = () => {
+    setShowConfirmDelete(false);
+    setPendingDeleteUserId(null);
   };
 
   const getRoleBadgeColor = (role) => {
@@ -212,6 +232,16 @@ const UserManagement = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+      <ConfirmationModal
+        isOpen={showConfirmDelete}
+        title="Confirm delete"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDeleteUser}
+        onCancel={cancelDeleteUser}
+        isLoading={deletingUser}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
@@ -445,7 +475,7 @@ const UserManagement = () => {
                         <Edit2 size={16} />
                       </button>
                       <button
-                        onClick={() => handleDeleteUser(u._id)}
+                        onClick={() => requestDeleteUser(u._id)}
                         className={`${u._id === user?.id 
                           ? 'text-slate-200 cursor-not-allowed' 
                           : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'
