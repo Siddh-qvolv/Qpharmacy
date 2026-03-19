@@ -43,7 +43,7 @@ function PurchaseReceiptDetail() {
     // Add header with company name - simple clean version
     doc.setFontSize(22);
     doc.setTextColor(0, 100, 0); // Dark green color
-    doc.text("Qpharmacy", 14, 15);
+    doc.text("Army Dental Corps", 14, 15);
     doc.setDrawColor(0, 128, 0);
     doc.setLineWidth(0.5);
     doc.line(14, 18, 196, 18); // Underline below company name
@@ -192,7 +192,7 @@ function PurchaseReceiptDetail() {
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
     doc.text(
-      "Qpharmacy | Generated on: " + new Date().toLocaleString(),
+      "Army Dental Corps | Generated on: " + new Date().toLocaleString(),
       14,
       finalY + 7
     );

@@ -172,7 +172,7 @@ const Login = () => {
               </div>
             </motion.div>
             <motion.p variants={itemVariants} className="text-lg font-medium text-emerald-100 mb-2">Welcome To</motion.p>
-            <motion.h2 variants={itemVariants} className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">Qpharmacy</motion.h2>
+            <motion.h2 variants={itemVariants} className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">Army Dental Corps</motion.h2>
             <motion.p variants={itemVariants} className="text-lg text-emerald-100 leading-relaxed">Streamline your pharmaceutical inventory management with our comprehensive platform</motion.p>
 
             {/* Feature highlights */}

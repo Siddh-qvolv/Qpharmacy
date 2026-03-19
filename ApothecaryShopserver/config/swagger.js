@@ -44,7 +44,7 @@ const options = {
       `,
       contact: {
         name: 'API Support',
-        email: 'support@qpharmacy.com'
+        email: 'support@Army Dental Corps.com'
       },
       license: {
         name: 'MIT',

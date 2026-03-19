@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import leafImage from '../assets/leaf.png';
+import leafImage from '../assets/logo.png';
 
 const LeafLoading = ({ isLoading }) => {
   const canvasRef = useRef(null);
@@ -30,7 +30,7 @@ const LeafLoading = ({ isLoading }) => {
     
     // Error handling for image loading
     img.onerror = () => {
-      console.error("Failed to load leaf.png");
+      console.error("Failed to load logo.png");
       // You can remove or modify the fallback since we're using direct import
     };
     
@@ -223,7 +223,7 @@ const LeafLoading = ({ isLoading }) => {
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-green-50 z-50 transition-opacity duration-500 ${isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <div className="text-center relative z-10">
-        <h1 className="text-4xl font-bold text-green-800 mb-3">Qpharmacy</h1>
+        <h1 className="text-4xl font-bold text-green-800 mb-3">Army Dental Corps</h1>
         <p className="text-green-600 mb-8">Loading your App</p>
       </div>
       <canvas 

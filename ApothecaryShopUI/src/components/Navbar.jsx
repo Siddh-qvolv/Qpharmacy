@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { PERMISSIONS, canAccess } from '../utils/roles';
+            import logo from "../assets/logo.png"; // adjust path if needed
+
 import { LayoutDashboard, PackageSearch, ShoppingBag, Truck, Users, LogOut, ChevronDown, Menu as MenuIcon, X } from 'lucide-react';
 
 const Navbar = () => {
@@ -67,11 +69,19 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex-shrink-0 flex items-center gap-2">
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
+            {/* <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
               <span className="text-xl leading-none block">🌿</span>
-            </div>
+            </div> */}
+<div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
+  <img 
+    src={logo} 
+    alt="logo" 
+    className="w-6 h-6 object-contain"
+  />
+</div>
+
             <span className="text-xl font-bold tracking-tight text-slate-800">
-              Qpharmacy
+              Army Dental Corps
             </span>
           </Link>
         </div>

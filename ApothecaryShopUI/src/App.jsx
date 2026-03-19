@@ -28,7 +28,7 @@ import DistributionDetail from './components/distribution/DistributionDetail';
 import DistributionDashboard from './components/distribution/DistributionDashboard';
 import LeafLoading from './components/LeafLoading';
 import './App.css';
-import leafImage from './assets/leaf.png';
+import leafImage from './assets/logo.png';
 
 // App content component that uses AuthContext
 function AppContent() {

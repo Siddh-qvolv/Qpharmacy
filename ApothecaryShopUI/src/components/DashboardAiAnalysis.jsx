@@ -17,7 +17,7 @@ const DashboardAiAnalysis = ({ stats }) => {
     try {
       // Create a prompt that includes all the inventory statistics
       const prompt = `
-        As an inventory management expert, analyze Qpharmacy's current inventory stats and provide actionable recommendations:
+        As an inventory management expert, analyze Army Dental Corps's current inventory stats and provide actionable recommendations:
         
         - Total Products: ${stats.totalProducts}
         - Low Stock Products: ${stats.lowStockProducts} 
