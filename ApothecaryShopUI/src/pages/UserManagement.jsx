@@ -399,101 +399,91 @@ const UserManagement = () => {
             </div>
           ) : (
             <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-50/50">
-                  <tr className="border-b border-slate-100">
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Member Details</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Role Matrix</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Provider</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Joined</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {users.map((u) => (
-                    <tr key={u._id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-11 w-11 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 shadow-sm flex items-center justify-center">
-                            <span className="text-slate-700 font-bold text-sm">
-                              {u.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{u.name}</div>
-                            <div className="text-xs text-slate-500 flex items-center mt-0.5">
-                              <Mail size={10} className="mr-1" />
-                              {u.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2.5 py-1 inline-flex text-xs font-bold rounded-md border ${getRoleBadgeColor(u.role)} uppercase tracking-wider`}>
-                          {ROLE_LABELS[u.role] || u.role}
+              <div className="divide-y divide-slate-100">
+                {users.map((u) => (
+                  <div
+                    key={u._id}
+                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 hover:bg-slate-50 transition-colors"
+                  >
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="flex-shrink-0 h-11 w-11 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 shadow-sm flex items-center justify-center">
+                        <span className="text-slate-700 font-bold text-sm">
+                          {u.name.charAt(0).toUpperCase()}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium hidden sm:table-cell">
-                        <span className="bg-slate-100 px-2 py-1 rounded capitalize">{u.provider || 'local'}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 hidden md:table-cell flex items-center">
-                        <Clock size={12} className="inline mr-1 text-slate-400" />
-                        {new Date(u.createdAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => handleEditUser(u)}
-                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="Edit Permissions"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(u._id)}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              u._id === user?.id 
-                                ? 'text-slate-200 cursor-not-allowed' 
-                                : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'
-                            }`}
-                            disabled={u._id === user?.id}
-                            title={u._id === user?.id ? "Cannot delete yourself" : "Revoke Access"}
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-slate-900 truncate">{u.name}</div>
+                        <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate">
+                          <Mail size={12} className="text-slate-400" />
+                          <span className="truncate">{u.email}</span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                    </div>
 
-            {/* Pagination Grid Layer */}
-            {totalPages > 1 && (
-              <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="text-sm text-slate-500">
-                  Showing page <span className="font-semibold text-slate-700">{page}</span> of <span className="font-semibold text-slate-700">{totalPages}</span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 border border-slate-200 text-sm font-medium rounded-lg text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors shadow-sm"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-3 py-1.5 border border-slate-200 text-sm font-medium rounded-lg text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors shadow-sm"
-                  >
-                    Next
-                  </button>
-                </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs">
+                      <span className={`px-2.5 py-1 inline-flex text-xs font-bold rounded-md border ${getRoleBadgeColor(u.role)} uppercase tracking-wider`}>
+                        {ROLE_LABELS[u.role] || u.role}
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 text-slate-500">
+                        <Clock size={12} className="text-slate-400" />
+                        {new Date(u.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 text-slate-500">
+                        <UserCircle size={12} className="text-slate-400" />
+                        {u.provider || 'local'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 justify-end">
+                      <button
+                        onClick={() => handleEditUser(u)}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                        title="Edit Permissions"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(u._id)}
+                        className={`${u._id === user?.id 
+                          ? 'text-slate-200 cursor-not-allowed' 
+                          : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'
+                        } p-2 rounded-xl transition-colors`}
+                        disabled={u._id === user?.id}
+                        title={u._id === user?.id ? "Cannot delete yourself" : "Revoke Access"}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
+
+              {/* Pagination Grid Layer */}
+              {totalPages > 1 && (
+                <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-sm text-slate-500">
+                    Showing page <span className="font-semibold text-slate-700">{page}</span> of <span className="font-semibold text-slate-700">{totalPages}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="px-3 py-1.5 border border-slate-200 text-sm font-medium rounded-lg text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors shadow-sm"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="px-3 py-1.5 border border-slate-200 text-sm font-medium rounded-lg text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors shadow-sm"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </motion.div>
