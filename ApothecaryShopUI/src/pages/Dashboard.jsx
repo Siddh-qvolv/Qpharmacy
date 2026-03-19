@@ -234,7 +234,7 @@ const Dashboard = () => {
           <motion.div
             variants={itemVariants}
             onClick={() => navigate("/inventory?filter=all")}
-            className="cursor-pointer bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+            className="cursor-pointer bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <PackageSearch size={64} />
@@ -256,7 +256,7 @@ const Dashboard = () => {
           <motion.div
             variants={itemVariants}
             onClick={() => navigate("/inventory?filter=low-stock")}
-            className="cursor-pointer bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+            className="cursor-pointer bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <AlertTriangle size={64} />
@@ -285,7 +285,7 @@ const Dashboard = () => {
           <motion.div
             variants={itemVariants}
             onClick={() => navigate("/inventory?filter=expiring-soon")}
-            className="cursor-pointer bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+            className="cursor-pointer bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Clock size={64} />
@@ -307,7 +307,7 @@ const Dashboard = () => {
           <motion.div
             variants={itemVariants}
             onClick={() => navigate("/inventory?filter=expired")}
-            className="cursor-pointer bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
+            className="cursor-pointer bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-sm p-6 relative overflow-hidden text-white group hover:shadow-md hover:scale-[1.02] transition-all"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <XCircle size={64} />
