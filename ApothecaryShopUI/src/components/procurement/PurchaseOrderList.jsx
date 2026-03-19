@@ -225,15 +225,15 @@ function PurchaseOrderList() {
         </div>
       </div>
 
-      {/* Table Container */}
+      {/* Cards Container */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {filteredOrders.length === 0 ? (
-          <div className="p-16 text-center text-slate-500 flex flex-col justify-center items-center">
+          <div className="col-span-full p-16 text-center text-slate-500 flex flex-col justify-center items-center bg-white rounded-2xl shadow-sm border border-slate-100">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
               <PackageCheck size={32} />
             </div>
@@ -241,117 +241,115 @@ function PurchaseOrderList() {
             <p className="text-slate-500">There are no purchase orders matching your current filter.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-slate-50/50">
-                <tr className="border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Reference</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Supplier</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {filteredOrders.map((order) => {
-                  const badgeConf = getStatusBadgeConfig(order.status);
-                  return (
-                    <motion.tr variants={itemVariants} key={order._id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">
-                          {order.poNumber}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
-                          {order.supplier?.name || "Unknown Supplier"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 hidden sm:table-cell font-medium">
-                        {format(new Date(order.orderDate), "MMM dd, yyyy")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-slate-700">₹{order.totalAmount.toFixed(2)}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${badgeConf.color} uppercase tracking-wider`}>
-                          {badgeConf.icon}
-                          {order.status.replace("_", " ")}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex justify-end gap-2 items-center">
-                          <Link
-                            to={`/procurement/purchase-orders/${order._id}`}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View Details"
-                          >
-                            <Eye size={18} />
-                          </Link>
+          filteredOrders.map((order) => {
+            const badgeConf = getStatusBadgeConfig(order.status);
+            return (
+              <motion.div 
+                variants={itemVariants}
+                key={order._id} 
+                className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-200 group"
+              >
+                {/* Card Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <span className="text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">
+                      {order.poNumber}
+                    </span>
+                  </div>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${badgeConf.color} uppercase tracking-wider`}>
+                    {badgeConf.icon}
+                    {order.status.replace("_", " ")}
+                  </span>
+                </div>
 
-                          {order.status === "draft" && (
-                            <>
-                              <Link
-                                to={`/procurement/purchase-orders/${order._id}/edit`}
-                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                                title="Edit Order"
-                              >
-                                <Edit2 size={18} />
-                              </Link>
-                              <button
-                                onClick={() => handleStatusChange(order._id, "submitted")}
-                                className="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-md text-xs font-semibold transition-colors"
-                              >
-                                Submit
-                              </button>
-                            </>
-                          )}
+                {/* Supplier */}
+                <div className="mb-3">
+                  <div className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                    {order.supplier?.name || "Unknown Supplier"}
+                  </div>
+                </div>
 
-                          {order.status === "submitted" && userRole === "admin" && (
-                            <button
-                              onClick={() => handleStatusChange(order._id, "approved")}
-                              className="px-2 py-1 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-md text-xs font-semibold transition-colors flex items-center"
-                            >
-                              <CheckCircle size={12} className="mr-1" /> Approve
-                            </button>
-                          )}
+                {/* Date and Amount */}
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-sm text-slate-500 font-medium">
+                    {format(new Date(order.orderDate), "MMM dd, yyyy")}
+                  </div>
+                  <div className="text-lg font-bold text-slate-700">
+                    ₹{order.totalAmount.toFixed(2)}
+                  </div>
+                </div>
 
-                          {order.status === "approved" && (
-                            <button
-                              onClick={() => handleStatusChange(order._id, "shipped")}
-                              className="px-2 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs font-semibold transition-colors flex items-center"
-                            >
-                              <Truck size={12} className="mr-1" /> Ship
-                            </button>
-                          )}
+                {/* Actions */}
+                <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
+                  <Link
+                    to={`/procurement/purchase-orders/${order._id}`}
+                    className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                  >
+                    <Eye size={16} className="mr-1" />
+                    View
+                  </Link>
 
-                          {order.status === "shipped" && (
-                            <Link
-                              to={`/procurement/receive/${order._id}`}
-                              className="px-2 py-1 bg-emerald-600 text-white hover:bg-emerald-700 rounded-md text-xs font-semibold transition-colors flex items-center shadow-sm"
-                            >
-                              <PackageCheck size={12} className="mr-1" /> Receive
-                            </Link>
-                          )}
+                  {order.status === "draft" && (
+                    <>
+                      <Link
+                        to={`/procurement/purchase-orders/${order._id}/edit`}
+                        className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                      >
+                        <Edit2 size={16} className="mr-1" />
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleStatusChange(order._id, "submitted")}
+                        className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                      >
+                        Submit
+                      </button>
+                    </>
+                  )}
 
-                          {(order.status === "draft" || order.status === "submitted") && (
-                            <button
-                              onClick={() => handleStatusChange(order._id, "cancelled")}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                              title="Cancel Order"
-                            >
-                              <XCircle size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  {order.status === "submitted" && userRole === "admin" && (
+                    <button
+                      onClick={() => handleStatusChange(order._id, "approved")}
+                      className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                    >
+                      <CheckCircle size={16} className="mr-1" />
+                      Approve
+                    </button>
+                  )}
+
+                  {order.status === "approved" && (
+                    <button
+                      onClick={() => handleStatusChange(order._id, "shipped")}
+                      className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                    >
+                      <Truck size={16} className="mr-1" />
+                      Ship
+                    </button>
+                  )}
+
+                  {order.status === "shipped" && (
+                    <Link
+                      to={`/procurement/receive/${order._id}`}
+                      className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm"
+                    >
+                      <PackageCheck size={16} className="mr-1" />
+                      Receive
+                    </Link>
+                  )}
+
+                  {(order.status === "draft" || order.status === "submitted") && (
+                    <button
+                      onClick={() => handleStatusChange(order._id, "cancelled")}
+                      className="flex-1 min-w-0 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors"
+                    >
+                      <XCircle size={16} className="mr-1" />
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })
         )}
       </motion.div>
     </motion.div>

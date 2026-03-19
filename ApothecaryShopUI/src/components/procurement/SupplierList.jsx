@@ -10,6 +10,19 @@ function SupplierList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
   useEffect(() => {
     fetchSuppliers();
   }, []);
