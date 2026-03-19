@@ -1,5 +1,5 @@
 /**
- * Role-based access control middleware for the Qpharmacy application
+ * Role-based access control middleware for the Army Dental Corps application
  * Used to restrict certain endpoints based on user roles
  */
 

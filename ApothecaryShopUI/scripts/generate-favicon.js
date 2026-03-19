@@ -1,4 +1,4 @@
-// Node script (ES module) to generate favicon.ico from src/assets/leaf.png using png-to-ico
+// Node script (ES module) to generate favicon.ico from src/assets/logo.png using png-to-ico
 // Usage: node ./scripts/generate-favicon.js
 // Produces: ../favicon.ico (UI root)
 
@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const projectRoot = path.resolve(__dirname, '..');
-const src = path.join(projectRoot, 'src', 'assets', 'leaf.png');
+const src = path.join(projectRoot, 'src', 'assets', 'logo.png');
 const dest = path.join(projectRoot, 'favicon.ico');
 
 if (!fs.existsSync(src)) {

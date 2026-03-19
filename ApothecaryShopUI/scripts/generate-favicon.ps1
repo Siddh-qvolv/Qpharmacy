@@ -1,10 +1,10 @@
-# Generate favicon.ico from src/assets/leaf.png using ImageMagick
+# Generate favicon.ico from src/assets/logo.png using ImageMagick
 # Usage: Open PowerShell in this folder and run: ./generate-favicon.ps1
 # Requires ImageMagick installed and 'magick' available in PATH.
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $projectRoot = Resolve-Path "$scriptRoot\.."
-$src = Join-Path $projectRoot "src\assets\leaf.png"
+$src = Join-Path $projectRoot "src\assets\logo.png"
 $dest = Join-Path $projectRoot "favicon.ico"  # place at UI root so dev servers serve /favicon.ico
 
 if (-Not (Test-Path $src)) {

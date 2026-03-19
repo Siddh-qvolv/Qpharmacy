@@ -18,7 +18,11 @@ import {
   Clock,
   Activity,
   UserPlus,
-  AlertCircle
+  AlertCircle,
+  PackageSearch,
+  ShoppingBag,
+  Truck,
+  Info
 } from 'lucide-react';
 
 const UserManagement = () => {
@@ -551,7 +555,7 @@ const UserManagement = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm"
-                      placeholder="jane@qpharmacy.com"
+                      placeholder="jane@Army Dental Corps.com"
                       required
                     />
                   </div>
