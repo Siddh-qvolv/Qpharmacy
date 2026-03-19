@@ -6,6 +6,7 @@ import {
   updateDistributionStatus,
 } from "../../services/distributionService";
 import AppLoader from "../AppLoader";
+import ConfirmationModal from "../ConfirmationModal";
 import {
   ArrowLeft,
   Package,
@@ -27,6 +28,8 @@ const DistributionDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState("");
 
   useEffect(() => {
     fetchDistribution();
@@ -44,27 +47,35 @@ const DistributionDetail = () => {
     }
   };
 
-  const handleStatusUpdate = async (newStatus) => {
-    if (
-      window.confirm(
-        `Are you sure you want to mark this order as ${newStatus}?`
-      )
-    ) {
-      setUpdatingStatus(true);
-      try {
-        const updatedDistribution = await updateDistributionStatus(
-          id,
-          newStatus
-        );
-        setDistribution(updatedDistribution);
-      } catch (err) {
-        console.error("Error updating status:", err);
-        setError("Failed to update status");
-      } finally {
-        setUpdatingStatus(false);
-      }
+  const [statusToApply, setStatusToApply] = useState("");
+
+  const requestStatusUpdate = (newStatus) => {
+    setStatusToApply(newStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const applyStatusUpdate = async () => {
+    if (!statusToApply) return;
+    setShowConfirmDialog(false);
+    setUpdatingStatus(true);
+
+    try {
+      const updatedDistribution = await updateDistributionStatus(id, statusToApply);
+      setDistribution(updatedDistribution);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      setError("Failed to update status");
+    } finally {
+      setUpdatingStatus(false);
+      setStatusToApply("");
     }
   };
+
+  const cancelStatusUpdate = () => {
+    setShowConfirmDialog(false);
+    setStatusToApply("");
+  };
+
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -263,6 +274,17 @@ const DistributionDetail = () => {
           </div>
         </motion.div>
 
+        <ConfirmationModal
+          isOpen={showConfirmDialog}
+          title="Confirm Status Change"
+          message={`Are you sure you want to mark this order as ${pendingStatus}?`}
+          confirmLabel="Yes, update"
+          cancelLabel="No, keep"
+          onConfirm={applyStatusUpdate}
+          onCancel={cancelStatusUpdate}
+          isLoading={updatingStatus}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Order Information */}
           <motion.div
@@ -342,7 +364,7 @@ const DistributionDetail = () => {
                     <div className="relative">
                       <select
                         value={distribution.status}
-                        onChange={(e) => handleStatusUpdate(e.target.value)}
+                        onChange={(e) => requestStatusUpdate(e.target.value)}
                         disabled={updatingStatus}
                         className="w-full appearance-none py-3 px-4 bg-white border-2 border-slate-200 rounded-xl font-semibold text-slate-900 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 cursor-pointer hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{
