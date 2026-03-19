@@ -149,6 +149,8 @@ const DistributionDetail = () => {
     );
   }
 
+  const statusSteps = ["pending", "processed", "shipped", "delivered"];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-emerald-50/20 xl:ml-20 pb-12">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -184,34 +186,77 @@ const DistributionDetail = () => {
           className="mb-8"
         >
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Order Status Progress</h3>
-            <div className="flex items-center justify-between">
-              {["pending", "processed", "shipped", "delivered"].map((s, idx) => {
+            <h3 className="text-sm font-semibold text-slate-900 mb-6 uppercase tracking-wide">Order Status Progress</h3>
+            <div className="flex items-center gap-4">
+              {statusSteps.map((s, idx) => {
+                const currentIndex = statusSteps.indexOf(distribution.status);
                 const isActive = distribution.status === s;
-                const isCompleted = ["processed", "shipped", "delivered", "returned"].includes(distribution.status) && idx < ["pending", "processed", "shipped", "delivered"].indexOf(distribution.status);
+                const isCompleted = idx < currentIndex;
+                const isInProgress = idx === currentIndex;
+
                 return (
-                  <motion.div
-                    key={s}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="flex flex-col items-center flex-1"
-                  >
-                    <motion.div
-                      animate={isActive ? { scale: [1, 1.1, 1] } : {}}
-                      transition={{ repeat: isActive ? Infinity : 0, duration: 1 }}
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all ${
-                        isActive || isCompleted
-                          ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg"
-                          : "bg-slate-100 text-slate-400 border border-slate-200"
-                      }`}
-                    >
-                      {s.charAt(0).toUpperCase()}
-                    </motion.div>
-                    <p className={`text-xs font-medium text-center ${isActive || isCompleted ? "text-slate-900" : "text-slate-400"}`}>
-                      {s.charAt(0).toUpperCase() + s.slice(1)}
-                    </p>
-                  </motion.div>
+                  <React.Fragment key={s}>
+                    <div className="flex flex-col items-center">
+                      <motion.div
+                        animate={isActive ? {
+                          scale: [1, 1.1, 1],
+                          boxShadow: [
+                            "0 0 0 0 rgba(16, 185, 129, 0.7)",
+                            "0 0 0 10px rgba(16, 185, 129, 0)",
+                            "0 0 0 0 rgba(16, 185, 129, 0.7)"
+                          ]
+                        } : {}}
+                        transition={{
+                          repeat: isActive ? Infinity : 0,
+                          duration: 2,
+                          ease: "easeInOut"
+                        }}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all duration-300 ${
+                          isActive || isCompleted
+                            ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg"
+                            : "bg-slate-100 text-slate-400 border border-slate-200"
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500"
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              opacity: [0.5, 0, 0.5]
+                            }}
+                            transition={{
+                              repeat: Infinity,
+                              duration: 2,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        )}
+                        {isCompleted ? (
+                          <CheckCircle size={20} />
+                        ) : (
+                          s.charAt(0).toUpperCase()
+                        )}
+                      </motion.div>
+                      <p className={`text-xs font-medium text-center ${isActive || isCompleted ? "text-slate-900" : "text-slate-400"}`}>
+                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                      </p>
+                    </div>
+
+                    {idx < statusSteps.length - 1 && (
+                      <div className="flex-1 flex items-center mx-2">
+                        <div className="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-emerald-500"
+                            initial={{ width: 0 }}
+                            animate={{
+                              width: isCompleted ? "100%" : isInProgress ? "50%" : "0%"
+                            }}
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </div>
