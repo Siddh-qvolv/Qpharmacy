@@ -141,7 +141,7 @@ const DistributionList = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12 pt-8">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 pt-8 transition-all duration-300">
       <ConfirmationModal
         isOpen={showConfirmDelete}
         title="Confirm delete"

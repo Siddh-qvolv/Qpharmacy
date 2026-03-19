@@ -108,7 +108,7 @@ const DistributionDetail = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-rose-50/20 xl:ml-20 p-6"
+        className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-rose-50/20 p-6 transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg border border-rose-200 p-8">
@@ -137,7 +137,7 @@ const DistributionDetail = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50/30 to-slate-50/20 xl:ml-20 p-6"
+        className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50/30 to-slate-50/20 p-6 transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
@@ -164,7 +164,7 @@ const DistributionDetail = () => {
   const statusSteps = ["pending", "processed", "shipped", "delivered"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-emerald-50/20 xl:ml-20 pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-emerald-50/20 pb-12 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header Section */}
         <motion.div

@@ -9,7 +9,7 @@ function ProcurementLayout() {
   const isAdmin = user?.role === 'admin';
   
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12 pt-8">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 pt-8 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
@@ -33,9 +33,9 @@ function ProcurementLayout() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="mb-8"
+          className="mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
         >
-          <div className="inline-flex p-1 space-x-1 bg-slate-100 rounded-xl">
+          <div className="inline-flex p-1 space-x-1 bg-slate-100 rounded-xl min-w-max">
             {isAdmin && (
               <NavLink 
                 to="/procurement/suppliers" 

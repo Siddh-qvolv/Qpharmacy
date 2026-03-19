@@ -53,7 +53,7 @@ function AppContent() {
     <div className="app">
       {isAuthenticated && <Navbar />}
       <LeafLoading isLoading={isLoading} />
-      <div className={`container transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`w-full transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
         <Routes>
           <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/login" element={<Login />} />

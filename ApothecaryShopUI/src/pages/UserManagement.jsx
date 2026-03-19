@@ -231,7 +231,7 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 transition-all duration-300">
       <ConfirmationModal
         isOpen={showConfirmDelete}
         title="Confirm delete"
@@ -256,14 +256,14 @@ const UserManagement = () => {
               <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
                 <ShieldCheck size={24} />
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Access Management</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Access Management</h1>
             </div>
-            <p className="text-slate-500 pl-11">Manage team members, roles, and system permissions</p>
+            <p className="text-slate-500 pl-11 text-sm sm:text-base">Manage team members and permissions</p>
           </div>
           
           <button
             onClick={handleCreateUser}
-            className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200"
           >
             <UserPlus className="w-4 h-4 mr-2" />
             Invite Member
@@ -369,41 +369,43 @@ const UserManagement = () => {
           transition={{ duration: 0.4, delay: 0.2 }}
           className="bg-white rounded-t-2xl shadow-sm border border-slate-100 p-5 flex flex-col md:flex-row gap-4 justify-between items-center border-b-0"
         >
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 w-full max-w-2xl">
+          <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-3 w-full">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <Search size={16} />
               </div>
               <input
                 type="text"
-                placeholder="Find member by name or email..."
+                placeholder="Find member..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
               />
             </div>
             
-            <select
-              value={roleFilter}
-              onChange={(e) => {
-                setRoleFilter(e.target.value);
-                setPage(1);
-              }}
-              className="px-4 py-2.5 bg-white border border-slate-200 text-sm font-medium text-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer appearance-none transition-colors shadow-sm"
-              style={{ paddingRight: '2.5rem', backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em' }}
-            >
-              <option value="">All Access Roles</option>
-              {getRoleOptions().map(role => (
-                <option key={role.value} value={role.value}>{role.label}</option>
-              ))}
-            </select>
-            
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition-colors shadow-sm"
-            >
-              Search
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <select
+                value={roleFilter}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full sm:w-auto px-4 py-2.5 bg-white border border-slate-200 text-sm font-medium text-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer appearance-none transition-colors shadow-sm"
+                style={{ paddingRight: '2.5rem', backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em' }}
+              >
+                <option value="">All Access Roles</option>
+                {getRoleOptions().map(role => (
+                  <option key={role.value} value={role.value}>{role.label}</option>
+                ))}
+              </select>
+              
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition-colors shadow-sm"
+              >
+                Search
+              </button>
+            </div>
           </form>
         </motion.div>
 

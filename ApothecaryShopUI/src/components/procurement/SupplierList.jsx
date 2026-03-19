@@ -79,7 +79,7 @@ function SupplierList() {
   if (error) return <div className="text-red-500 p-4">{error}</div>;
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 transition-all duration-300">
       <ConfirmationModal
         isOpen={showConfirmDelete}
         title="Confirm delete"

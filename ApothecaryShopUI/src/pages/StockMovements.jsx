@@ -124,7 +124,7 @@ const StockMovements = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <motion.div 

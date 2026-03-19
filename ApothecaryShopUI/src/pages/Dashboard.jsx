@@ -182,7 +182,7 @@ const Dashboard = () => {
   };
  
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
  
         {/* Header Section */}
@@ -197,25 +197,25 @@ const Dashboard = () => {
               <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
                 <LayoutDashboard size={24} />
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Overview</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Overview</h1>
             </div>
-            <p className="text-slate-500 pl-11">Welcome back, <span className="font-medium text-slate-700">{user?.name || "User"}</span></p>
+            <p className="text-slate-500 pl-11 text-sm sm:text-base">Welcome back, <span className="font-medium text-slate-700">{user?.name || "User"}</span></p>
           </div>
  
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               to="/inventory"
-              className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-emerald-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-xl text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-emerald-600 transition-all duration-200"
             >
               <PackageSearch className="w-4 h-4 mr-2" />
-              Manage Inventory
+              Inventory
             </Link>
             <Link
               to="/stock-movements"
-              className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200"
             >
               <Activity className="w-4 h-4 mr-2" />
-              Stock Movements
+              Stock
             </Link>
           </div>
         </motion.div>
@@ -227,7 +227,7 @@ const Dashboard = () => {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8"
         >
  
           {/* Total Products */}

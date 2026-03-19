@@ -168,7 +168,7 @@ const Inventory = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
+    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans pb-12 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 
         {/* Header Section */}
@@ -188,11 +188,10 @@ const Inventory = () => {
             <p className="text-slate-500 pl-11">Manage and track your medical supplies</p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* <MaomaoVision onProductFound={handleProductFound} /> */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               to="/products/new"
-              className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Product
@@ -205,9 +204,9 @@ const Inventory = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between"
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-6 flex flex-col lg:flex-row gap-4 items-center justify-between"
         >
-          <div className="relative w-full sm:w-96">
+          <div className="relative w-full lg:w-96">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Search size={18} />
             </div>
@@ -228,14 +227,14 @@ const Inventory = () => {
             )}
           </div>
 
-          <div className="w-full sm:w-auto flex items-center relative">
+          <div className="w-full lg:w-auto flex items-center relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Filter size={16} />
             </div>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="block w-full sm:w-auto pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:bg-slate-50 cursor-pointer appearance-none shadow-sm transition-colors"
+              className="block w-full lg:w-auto pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:bg-slate-50 cursor-pointer appearance-none shadow-sm transition-colors"
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
             >
               <option value="all">All Products</option>

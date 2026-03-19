@@ -154,7 +154,7 @@ const Login = () => {
       {/* Dark overlay for better readability */}
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
       
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10 shadow-2xl rounded-3xl overflow-hidden shadow-black/50">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10 shadow-2xl rounded-3xl overflow-hidden shadow-black/50">
         {/* Left Welcome Panel */}
         <motion.div
           variants={panelLeftVariants}
