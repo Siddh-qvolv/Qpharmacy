@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 import { addAbbreviation } from "../../utils/util.js";
 import AppLoader from "../components/AppLoader.jsx";
 import { motion } from "framer-motion";
-import { 
-  PackageSearch, 
-  AlertTriangle, 
-  Clock, 
-  XCircle, 
+import {
+  PackageSearch,
+  AlertTriangle,
+  Clock,
+  XCircle,
   IndianRupee,
   LayoutDashboard,
   TrendingUp,
@@ -177,9 +177,9 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
+
         {/* Header Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -214,7 +214,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Stats Grid */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
@@ -235,7 +235,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Low Stock */}
-          <motion.div variants={itemVariants}  onClick={() => navigate("/inventory?filter=low-stock")} className=" cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=low-stock")} className=" cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <AlertTriangle size={64} />
             </div>
@@ -278,9 +278,9 @@ const Dashboard = () => {
                 <XCircle size={20} />
               </div>
               {stats.expiredProducts > 0 && (
-                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">
-                   Action Needed
-                 </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">
+                  Action Needed
+                </span>
               )}
             </div>
             <h3 className="text-slate-500 text-sm font-medium mb-1">Expired</h3>
@@ -304,9 +304,9 @@ const Dashboard = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
+
           {/* Recently Added Products List */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -318,7 +318,7 @@ const Dashboard = () => {
                 <p className="text-sm text-slate-500">Latest additions to your inventory</p>
               </div>
             </div>
-            
+
             <div className="p-0 flex-1 overflow-x-auto">
               {recentProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64 text-center px-4">
@@ -352,11 +352,10 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            product.stockQuantity <= product.reorderLevel 
-                              ? 'bg-amber-100 text-amber-800' 
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.stockQuantity <= product.reorderLevel
+                              ? 'bg-amber-100 text-amber-800'
                               : 'bg-emerald-100 text-emerald-800'
-                          }`}>
+                            }`}>
                             {product.stockQuantity} {product.unit}
                           </span>
                         </td>
@@ -376,7 +375,7 @@ const Dashboard = () => {
                 </table>
               )}
             </div>
-            
+
             {recentProducts.length > 0 && (
               <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
                 <Link to="/inventory" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center group w-fit">
@@ -388,7 +387,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Procurement Overview */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -423,7 +422,7 @@ const Dashboard = () => {
                     View All
                   </Link>
                 </div>
-                
+
                 {recentPurchaseOrders.length > 0 ? (
                   <div className="space-y-3">
                     {recentPurchaseOrders.map((order) => (
@@ -453,7 +452,7 @@ const Dashboard = () => {
               </div>
             </div>
           </motion.div>
-          
+
         </div>
       </div>
     </div>
