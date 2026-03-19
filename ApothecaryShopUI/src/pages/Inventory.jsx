@@ -271,7 +271,7 @@ const Inventory = () => {
           </motion.div>
         )}
 
-        {/* Table Content */}
+        {/* Product Cards */}
         {filteredProducts.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -302,93 +302,90 @@ const Inventory = () => {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+            className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
           >
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-100">
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">SKU</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Name</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap hidden md:table-cell">Category</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Stock</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Price</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell">Status</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Expiry</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filteredProducts.map((product) => {
-                    const today = new Date();
-                    const expiryDate = product.expiryDate ? new Date(product.expiryDate) : new Date();
-                    const isExpired = expiryDate < today;
-                    const isExpiringSoon = !isExpired && expiryDate <= new Date(today.setDate(today.getDate() + 90));
+            {filteredProducts.map((product) => {
+              const today = new Date();
+              const expiryDate = product.expiryDate ? new Date(product.expiryDate) : new Date();
+              const isExpired = expiryDate < today;
+              const expirySoonThreshold = new Date();
+              expirySoonThreshold.setDate(expirySoonThreshold.getDate() + 90);
+              const isExpiringSoon = !isExpired && expiryDate <= expirySoonThreshold;
 
-                    return (
-                      <motion.tr variants={itemVariants} key={product._id} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded" title={product.sku}>
-                            {product.sku}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Link to={`/products/${product._id}`} className="flex items-center group-hover:text-emerald-600 transition-colors">
-                            <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold mr-3 shrink-0">
-                              {product.name ? product.name.charAt(0).toUpperCase() : "N"}
-                            </div>
-                            <span className="text-sm font-semibold text-slate-800 truncate max-w-[150px] sm:max-w-xs" title={product.name}>
-                              {product.name}
-                            </span>
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                          <span className="text-sm text-slate-500">{product.category}</span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <span className={`text-sm font-bold ${product.stockQuantity <= product.reorderLevel ? "text-rose-600" : "text-slate-700"}`}>
-                              {product.stockQuantity}
-                            </span>
-                            {product.stockQuantity <= product.reorderLevel && (
-                              <AlertTriangle size={14} className="ml-1.5 text-rose-500 inline-block" />
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-600">
-                          ₹{Number(product.unitPrice || 0).toFixed(2)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
-                          <span className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-md border ${product.stockQuantity <= product.reorderLevel
-                              ? "bg-rose-50 text-rose-700 border-rose-100"
-                              : "bg-emerald-50 text-emerald-700 border-emerald-100"
-                            }`}>
-                            {product.stockQuantity <= product.reorderLevel ? "Low Stock" : "In Stock"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            {isExpired ? <XCircle size={14} className="text-rose-500" /> : isExpiringSoon ? <Clock size={14} className="text-amber-500" /> : null}
-                            <span className={`text-sm font-medium ${isExpired ? "text-rose-600" : isExpiringSoon ? "text-amber-600" : "text-slate-500"}`}>
-                              {expiryDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <Link
-                            to={`/products/${product._id}/edit`}
-                            className="inline-flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                            title="Edit Product"
-                          >
-                            <Edit2 size={16} />
-                          </Link>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+              const stockLow = product.stockQuantity <= product.reorderLevel;
+
+              return (
+                <motion.div
+                  variants={itemVariants}
+                  key={product._id}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
+                          {product.name ? product.name.charAt(0).toUpperCase() : "N"}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-base font-semibold text-slate-900 truncate">{product.name}</h3>
+                          <p className="text-xs text-slate-500 truncate">{product.sku}</p>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-slate-500 truncate">
+                        {product.category || "Uncategorized"}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          stockLow
+                            ? "bg-rose-50 text-rose-700 border border-rose-100"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                        }`}
+                      >
+                        {stockLow ? "Low Stock" : "In Stock"}
+                      </span>
+                      <Link
+                        to={`/products/${product._id}/edit`}
+                        className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                        title="Edit Product"
+                      >
+                        Edit
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600">
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock</p>
+                      <p className={`${stockLow ? "text-rose-600" : "text-slate-800"} font-semibold`}>{product.stockQuantity}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Price</p>
+                      <p className="font-semibold">₹{Number(product.unitPrice || 0).toFixed(2)}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Expiry</p>
+                      <div className="flex items-center gap-1">
+                        {isExpired ? (
+                          <XCircle size={14} className="text-rose-500" />
+                        ) : isExpiringSoon ? (
+                          <Clock size={14} className="text-amber-500" />
+                        ) : null}
+                        <p className={`${isExpired ? "text-rose-600" : isExpiringSoon ? "text-amber-600" : "text-slate-500"} font-semibold`}>
+                          {expiryDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</p>
+                      <p className="text-slate-700 font-semibold">{stockLow ? "Action required" : "Healthy"}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
       </div>

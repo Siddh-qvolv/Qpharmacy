@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getDistributions, deleteDistribution, exportDistributionsCSV, exportDistributionsPDF } from '../../services/distributionService';
 import { motion } from 'framer-motion';
+import ConfirmationModal from '../ConfirmationModal';
 import { 
   Truck, 
   FileDown, 
@@ -10,8 +11,6 @@ import {
   Search, 
   Calendar, 
   Filter, 
-  Eye, 
-  Trash2,
   PackageCheck
 } from 'lucide-react';
 
@@ -24,6 +23,9 @@ const DistributionList = () => {
     startDate: '',
     endDate: ''
   });
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchDistributions();
@@ -61,17 +63,33 @@ const DistributionList = () => {
     setTimeout(fetchDistributions, 0);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this distribution order? This action cannot be undone.')) {
-      try {
-        await deleteDistribution(id);
-        setDistributions(prevDistributions => 
-          prevDistributions.filter(dist => dist._id !== id)
-        );
-      } catch (error) {
-        console.error('Error deleting distribution:', error);
-      }
+  const requestDelete = (id) => {
+    setPendingDeleteId(id);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+
+    setShowConfirmDelete(false);
+    setDeleting(true);
+
+    try {
+      await deleteDistribution(pendingDeleteId);
+      setDistributions(prevDistributions => 
+        prevDistributions.filter(dist => dist._id !== pendingDeleteId)
+      );
+    } catch (error) {
+      console.error('Error deleting distribution:', error);
+    } finally {
+      setDeleting(false);
+      setPendingDeleteId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDelete(false);
+    setPendingDeleteId(null);
   };
 
   const handleExportCSV = async () => {
@@ -124,6 +142,16 @@ const DistributionList = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12 pt-8">
+      <ConfirmationModal
+        isOpen={showConfirmDelete}
+        title="Confirm delete"
+        message="Are you sure you want to delete this distribution order? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isLoading={deleting}
+      />
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
@@ -305,73 +333,61 @@ const DistributionList = () => {
             animate="show"
             className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
           >
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-100">
-                <thead className="bg-slate-50/50">
-                  <tr>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Order #</th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Recipient Info</th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Items</th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-50">
-                  {distributions.map((dist) => (
-                    <motion.tr variants={itemVariants} key={dist._id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded">
-                          {dist.orderNumber}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium hidden sm:table-cell">
-                        {new Date(dist.createdAt).toLocaleDateString(undefined, {
-                          month: 'short', day: 'numeric', year: 'numeric'
-                        })}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col">
-                          <span className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
-                            {dist.recipient}
-                          </span>
-                          <span className="text-xs text-slate-400 capitalize flex items-center mt-0.5">
-                            {dist.recipientType}
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+              {distributions.map((dist) => (
+                <motion.div
+                  key={dist._id}
+                  variants={itemVariants}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                          <Truck size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-semibold text-slate-900 truncate">Order #{dist.orderNumber}</h3>
+                          <p className="text-xs text-slate-500 truncate">{dist.recipient}</p>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <Calendar size={14} className="text-slate-400" />
+                          <span>
+                            {new Date(dist.createdAt).toLocaleDateString(undefined, {
+                              month: 'short', day: 'numeric', year: 'numeric'
+                            })}
                           </span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                        <div className="flex items-center text-sm font-medium text-slate-600">
-                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md mr-1.5">{dist.items.length}</span> items
+                        <div className="mt-1 text-xs text-slate-400">
+                          {dist.items.length} items • {dist.recipientType}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(dist.status)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2">
-                          <Link
-                            to={`/distributions/${dist._id}`}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View Details"
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-3">
+                      {getStatusBadge(dist.status)}
+                      <div className="flex gap-2">
+                        <Link
+                          to={`/distributions/${dist._id}`}
+                          className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                        >
+                          View
+                        </Link>
+                        {dist.status === 'pending' && (
+                          <button 
+                            onClick={() => requestDelete(dist._id)}
+                            className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition"
                           >
-                            <Eye size={18} />
-                          </Link>
-                          {dist.status === 'pending' && (
-                            <button 
-                              onClick={() => handleDelete(dist._id)}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                              title="Delete Order"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
             {distributions.length > 0 && (
               <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">

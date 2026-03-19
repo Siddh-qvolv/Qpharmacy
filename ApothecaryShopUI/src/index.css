@@ -5,8 +5,15 @@ html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
+  min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  color-scheme: light;
   background-color: #f8fafc;
+  background-image: radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.15), transparent 55%),
+                    radial-gradient(circle at 85% 25%, rgba(34, 211, 238, 0.12), transparent 55%),
+                    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

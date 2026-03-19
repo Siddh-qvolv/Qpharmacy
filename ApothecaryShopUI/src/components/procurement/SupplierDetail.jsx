@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import AppLoader from "../AppLoader.jsx";
+import ConfirmationModal from "../ConfirmationModal";
 
 const SupplierDetail = () => {
   const { id } = useParams();
@@ -10,6 +11,8 @@ const SupplierDetail = () => {
   const [supplier, setSupplier] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchSupplier = async () => {
@@ -39,28 +42,39 @@ const SupplierDetail = () => {
     fetchSupplier();
   }, [id, token]);
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this supplier?")) {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/suppliers/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
+  const requestDelete = () => {
+    setShowConfirmDelete(true);
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to delete supplier");
+  const confirmDelete = async () => {
+    setShowConfirmDelete(false);
+    setDeleting(true);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/suppliers/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: token,
+          },
         }
+      );
 
-        navigate("/procurement/suppliers");
-      } catch (err) {
-        setError(err.message);
+      if (!response.ok) {
+        throw new Error("Failed to delete supplier");
       }
+
+      navigate("/procurement/suppliers");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDelete(false);
   };
 
   if (loading) return <AppLoader message="Loading" />;
@@ -71,6 +85,17 @@ const SupplierDetail = () => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
+      <ConfirmationModal
+        isOpen={showConfirmDelete}
+        title="Confirm delete"
+        message="Are you sure you want to delete this supplier?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isLoading={deleting}
+      />
+
       <h1 className="text-2xl font-bold mb-6">{supplier.name}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -123,7 +148,7 @@ const SupplierDetail = () => {
           Edit Supplier
         </Link>
         <button
-          onClick={handleDelete}
+          onClick={requestDelete}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Delete Supplier
