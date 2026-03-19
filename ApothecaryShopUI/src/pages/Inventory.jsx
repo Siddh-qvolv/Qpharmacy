@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 // import MaomaoVision from "../components/MaomaoVision";
 import AppLoader from "../components/AppLoader";
 import { motion } from "framer-motion";
-import { 
-  Search, 
-  X, 
-  Plus, 
+import {
+  Search,
+  X,
+  Plus,
   PackageSearch,
   AlertTriangle,
   Clock,
@@ -16,6 +16,7 @@ import {
   Edit2,
   Package
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Inventory = () => {
   const [products, setProducts] = useState([]);
@@ -27,6 +28,8 @@ const Inventory = () => {
     message: "",
     severity: "info",
   });
+  const location = useLocation();
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,6 +53,16 @@ const Inventory = () => {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const filter = params.get("filter");
+
+    if (filter) {
+      setFilterStatus(filter);
+    }
+  }, [location.search]);
+
 
   // Filter products based on search term and status
   const filteredProducts = products.filter((product) => {
@@ -118,9 +131,9 @@ const Inventory = () => {
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 xl:ml-20 font-sans pb-12">
       <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
+
         {/* Header Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -137,7 +150,7 @@ const Inventory = () => {
           </div>
 
           <div className="flex items-center gap-3">
-             {/* <MaomaoVision onProductFound={handleProductFound} /> */}
+            {/* <MaomaoVision onProductFound={handleProductFound} /> */}
             <Link
               to="/products/new"
               className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
@@ -149,7 +162,7 @@ const Inventory = () => {
         </motion.div>
 
         {/* Filters and Search */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
@@ -197,18 +210,17 @@ const Inventory = () => {
 
         {/* Snackbar notification */}
         {snackbar.open && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-6 p-4 rounded-xl shadow-sm border flex justify-between items-center ${
-              snackbar.severity === "info"
+            className={`mb-6 p-4 rounded-xl shadow-sm border flex justify-between items-center ${snackbar.severity === "info"
                 ? "bg-blue-50 border-blue-100 text-blue-700"
                 : snackbar.severity === "success"
-                ? "bg-emerald-50 border-emerald-100 text-emerald-700"
-                : snackbar.severity === "error"
-                ? "bg-rose-50 border-rose-100 text-rose-700"
-                : "bg-amber-50 border-amber-100 text-amber-700"
-            }`}
+                  ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+                  : snackbar.severity === "error"
+                    ? "bg-rose-50 border-rose-100 text-rose-700"
+                    : "bg-amber-50 border-amber-100 text-amber-700"
+              }`}
           >
             <span className="font-medium text-sm">{snackbar.message}</span>
             <button
@@ -222,7 +234,7 @@ const Inventory = () => {
 
         {/* Table Content */}
         {filteredProducts.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center flex flex-col items-center justify-center min-h-[400px]"
@@ -232,8 +244,8 @@ const Inventory = () => {
             </div>
             <h3 className="text-lg font-semibold text-slate-800 mb-1">No products found</h3>
             <p className="text-slate-500 max-w-sm">
-              {searchTerm 
-                ? `We couldn't find any products matching "${searchTerm}" with the current filters.` 
+              {searchTerm
+                ? `We couldn't find any products matching "${searchTerm}" with the current filters.`
                 : "Your inventory list is currently empty. Start tracking your items by adding a new product."}
             </p>
             {!searchTerm && (
@@ -247,7 +259,7 @@ const Inventory = () => {
             )}
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -308,11 +320,10 @@ const Inventory = () => {
                           ₹{Number(product.unitPrice || 0).toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
-                          <span className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-md border ${
-                            product.stockQuantity <= product.reorderLevel
+                          <span className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-md border ${product.stockQuantity <= product.reorderLevel
                               ? "bg-rose-50 text-rose-700 border-rose-100"
                               : "bg-emerald-50 text-emerald-700 border-emerald-100"
-                          }`}>
+                            }`}>
                             {product.stockQuantity <= product.reorderLevel ? "Low Stock" : "In Stock"}
                           </span>
                         </td>

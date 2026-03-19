@@ -19,6 +19,7 @@ import {
   ShoppingBag,
   Activity
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -36,6 +37,7 @@ const Dashboard = () => {
     openOrders: 0,
     thisMonth: 0,
   });
+  const navigate = useNavigate();
   const [recentPurchaseOrders, setRecentPurchaseOrders] = useState([]);
 
   useEffect(() => {
@@ -219,7 +221,7 @@ const Dashboard = () => {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
         >
           {/* Total Products */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=all")} className="cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <PackageSearch size={64} />
             </div>
@@ -233,7 +235,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Low Stock */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <motion.div variants={itemVariants}  onClick={() => navigate("/inventory?filter=low-stock")} className=" cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <AlertTriangle size={64} />
             </div>
@@ -253,7 +255,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Expiring Soon */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=expiring-soon")} className="cursor-pointer bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <Clock size={64} />
             </div>
@@ -267,7 +269,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Expired */}
-          <motion.div variants={itemVariants} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <motion.div variants={itemVariants} onClick={() => navigate("/inventory?filter=expired")} className="cursor-pointer  bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <XCircle size={64} />
             </div>
