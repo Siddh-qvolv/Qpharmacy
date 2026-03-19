@@ -30,29 +30,29 @@ const Inventory = () => {
   });
   const location = useLocation();
 
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      const response = await axios.get(`${apiUrl}/products`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      setProducts(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const apiUrl = import.meta.env.VITE_API_URL;
+  fetchProducts();
+}, [location.pathname]);
 
-        const response = await axios.get(`${apiUrl}/products`, {
-          headers: {
-            Authorization: `${token}`,
-          },
-        });
-
-        setProducts(response.data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -65,7 +65,38 @@ const Inventory = () => {
 
 
   // Filter products based on search term and status
-  const filteredProducts = products.filter((product) => {
+  // const filteredProducts = products.filter((product) => {
+  //   const matchesSearch =
+  //     (product.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+  //     (product.sku?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+
+  //   if (filterStatus === "all") return matchesSearch;
+  //   if (filterStatus === "low-stock")
+  //     return matchesSearch && product.stockQuantity <= product.reorderLevel;
+  //   if (filterStatus === "in-stock")
+  //     return matchesSearch && product.stockQuantity > product.reorderLevel;
+
+  //   const today = new Date();
+  //   const expiryDate = product.expiryDate ? new Date(product.expiryDate) : null;
+
+  //   if (filterStatus === "expiring-soon") {
+  //     const ninetyDaysFromNow = new Date();
+  //     ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90);
+  //     return (
+  //       matchesSearch &&
+  //       expiryDate &&
+  //       expiryDate <= ninetyDaysFromNow &&
+  //       expiryDate >= today
+  //     );
+  //   }
+  //   if (filterStatus === "expired")
+  //     return matchesSearch && expiryDate && expiryDate < today;
+
+  //   return matchesSearch;
+  // });
+
+  const filteredProducts = products
+  .filter((product) => {
     const matchesSearch =
       (product.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
       (product.sku?.toLowerCase() || "").includes(searchTerm.toLowerCase());
@@ -89,11 +120,19 @@ const Inventory = () => {
         expiryDate >= today
       );
     }
+
     if (filterStatus === "expired")
       return matchesSearch && expiryDate && expiryDate < today;
 
     return matchesSearch;
+  })
+  .sort((a, b) => {
+    const dateA = a.expiryDate ? new Date(a.expiryDate) : new Date(9999, 0, 1);
+    const dateB = b.expiryDate ? new Date(b.expiryDate) : new Date(9999, 0, 1);
+
+    return dateA - dateB; // 🔥 nearest expiry first
   });
+
 
   // Handle product found via image search
   const handleProductFound = (productName) => {
