@@ -60,7 +60,7 @@ ProductSchema.pre('save', function(next) {
     const categoryCode = (this.category || 'GEN').substring(0, 3).toUpperCase();
     this.sku = `AP-${categoryCode}-${timestamp}`;
   }
-  next();
+  // next();
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

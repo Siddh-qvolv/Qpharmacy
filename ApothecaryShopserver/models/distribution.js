@@ -72,7 +72,7 @@ distributionSchema.pre('save', async function(next) {
     
     this.orderNumber = `DO-${dateStr}-${counter.toString().padStart(4, '0')}`;
   }
-  next();
+  // next();
 });
 
 const Distribution = mongoose.model('Distribution', distributionSchema);
